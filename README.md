@@ -1,7 +1,7 @@
 # Planning in the tree search
 This Repository is the codes for planning in the tree search task.
 
-![image-20250714164257067](/Users/lijialin/Library/Application Support/typora-user-images/image-20250714164257067.png)
+![image-20250714164257067](images/task.png)
 
 ## Overview
 
