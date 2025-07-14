@@ -94,7 +94,7 @@ end
             upper_bounds = ubs, 
             plausible_lower_bounds = plbs,
             plausible_upper_bounds = pubs,
-            max_fun_evals = 100,
+            max_fun_evals = 200,
             uncertainty_handling = true
         )
         
@@ -123,7 +123,7 @@ end
 Run model fitting for all subjects using the specified model.
 """
 function run_model_fitting(model_name::String; 
-                          data_file::String = "data/Tree2_v3.json",
+                          data_file::String = "data/Tree1_v3.json",
                           output_file::Union{String, Nothing} = nothing)
     
     # Validate model name
@@ -132,6 +132,12 @@ function run_model_fitting(model_name::String;
     # Set default output file name
     if output_file === nothing
         output_file = "results/results_$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+    end
+
+    # Create output directory if it doesn't exist
+    output_dir = dirname(output_file)
+    if !isdir(output_dir)
+        mkpath(output_dir)
     end
     
     println("="^60)
@@ -265,7 +271,7 @@ end
 Example: Fit a single model
 """
 function example_single_model()
-    results = run_model_fitting("model2")
+    results = run_model_fitting("model1", data_file="data/Tree1_sub/w0c70a81.json")
 end
 
 """

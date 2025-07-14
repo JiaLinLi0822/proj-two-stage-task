@@ -132,11 +132,12 @@ function run_model_fitting(model_name::String;
     # Set default output file name
     if output_file === nothing
         output_file = "results/results_$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+    end
 
-        # if the directory does not exist, create it
-        if !isdir("results")
-            mkdir("results")
-        end
+    # Create output directory if it doesn't exist
+    output_dir = dirname(output_file)
+    if !isdir(output_dir)
+        mkpath(output_dir)
     end
     
     println("="^60)

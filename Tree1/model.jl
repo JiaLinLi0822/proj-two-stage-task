@@ -1564,26 +1564,26 @@ end
 # theta = [8e-5, 6e-5, 0.5, 0.8, 500.0, 500.0]
 # theta = [6e-5, 8e-5, 6e-5, 0.3, 0.5, 0.8, 500.0, 500.0]
 # theta = [7e-5, 0.6, 1.0, 1.2, 500.0, 500.0, 0.1]
-theta = [7e-5, 8e-5, 6e-5, 0.4, 0.5, 0.8, 500.0, 500.0]
+# theta = [7e-5, 8e-5, 6e-5, 0.4, 0.5, 0.8, 500.0, 500.0]
 
-# Create a Model instance
-model = Model(model10, theta)
+# # Create a Model instance
+# model = Model(model10, theta)
 
-# Create a Trial instance
-trial = Trial(
-    [2.0, -1.0, 2.0, -3.0, 1.0],
-    1,
-    1,
-    0.0,
-    0.0
-)
+# # Create a Trial instance
+# trial = Trial(
+#     [2.0, -1.0, 2.0, -3.0, 1.0],
+#     1,
+#     1,
+#     0.0,
+#     0.0
+# )
 
-# simulate
-result = model.simulate(model.θ, trial.rewards)
+# # simulate
+# result = model.simulate(model.θ, trial.rewards)
 
-# result containts: choice1, rt1, choice2, rt2, timeout
-println("choice1 = ", result.choice1)  # 1 或 2
-println("rt1     = ", result.rt1)
-println("choice2 = ", result.choice2)  # 1 到 4
-println("rt2     = ", result.rt2)
-println("timeout = ", result.timeout)
+# # result containts: choice1, rt1, choice2, rt2, timeout
+# println("choice1 = ", result.choice1)  # 1 或 2
+# println("rt1     = ", result.rt1)
+# println("choice2 = ", result.choice2)  # 1 到 4
+# println("rt2     = ", result.rt2)
+# println("timeout = ", result.timeout)

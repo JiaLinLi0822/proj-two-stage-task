@@ -37,7 +37,9 @@ function BadsProcess(conf::BadsConfig)
     stdout = Pipe()
     # conf = JSON3.write(conf; allow_inf=true)
     conf = JSON.json(conf)
-    proc = run(pipeline(`python bads.py $conf`; stdin, stdout, stderr), wait = false)
+
+    script_dir = @__DIR__
+    proc = run(pipeline(`python $script_dir/bads.py $conf`; stdin, stdout, stderr), wait = false)
 
     process_running(proc) || error("There was a problem.")
     BadsProcess(stdin, stdout, proc, String[], :active)
