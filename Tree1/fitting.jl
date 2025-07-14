@@ -131,7 +131,7 @@ function run_model_fitting(model_name::String;
     
     # Set default output file name
     if output_file === nothing
-        output_file = "results/results_$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+        output_file = "results/Tree1/$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
     end
 
     # Create output directory if it doesn't exist
@@ -271,7 +271,7 @@ end
 Example: Fit a single model
 """
 function example_single_model()
-    results = run_model_fitting("model1", data_file="data/Tree1_sub/w0c70a81.json")
+    results = run_model_fitting("model1", data_file="data/Tree1_sub/w0e2f500.json")
 end
 
 """
