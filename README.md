@@ -1,5 +1,5 @@
 # Planning in the tree search
-This Repository is the codes for planning in the tree search task.
+This Repository is the codes for planning in the tree search task. There are eleven locations (states), each labeled with different shapes, the number of points one would gain or lose are described in the figure below. Participants obtained the points by moving the to the different locations(rewards). The current state is highlighted in blue and current actions are indicated by orange arrows; participants select actions by pressing the 'F' they wish to move to. Once the move is made by pressing the 'J', the decision is final—they cannot reverse the action or revisit previous states. The trial ends when the participant reaches a state with no outgoing arrows. The participant’s goal is to visit a sequence of states that maximizes the total points earned. The online experiment can be visited on [here](https://solway-761f14246dd1.herokuapp.com/ad?assignmentId=debugCX4gW&hitId=debugNeiqU&workerId=debug61359&mode=debug)
 
 ![image-20250714164257067](images/task.png)
 
