@@ -131,14 +131,13 @@ function simulate_trials(model_name::String;
         theta = param_dict[wid]
         
         for entry in subject_trials
-            # Prepare reward structure: [R_L, R_R, R_LL, R_LR, R_RL, R_RR]
+            # Prepare reward structure: [R_L, R_R, R_LL, R_RL, R_RR]
             rewards = Float64[
                 entry["value1"][1],  # R_L
                 entry["value1"][2],  # R_R  
                 entry["value2"][1],  # R_LL
-                entry["value2"][2],  # R_LR
-                entry["value2"][3],  # R_RL
-                entry["value2"][4]   # R_RR
+                entry["value2"][2],  # R_RL
+                entry["value2"][3],  # R_RR
             ]
             
             # Run multiple simulations if requested
@@ -258,7 +257,7 @@ end
 
 ### Use example:
 
-# julia julia/simulate_trials.jl model1 julia/results/results_model1_20250711_215704.csv data/Tree2_v3.json data/simulation/simulate_model1.json
+# julia Tree1/simulation.jl model1 results/results_model1_20250714_172921.csv data/Tree1_sub/w0c70a81.json data/Tree1_sim/simulate_model1.json
 # julia julia/simulate_trials.jl model3 julia/results/results_model3_20250710_170323.csv data/Tree2_v3.json data/simulation/simulate_model3.json
 # julia julia/simulate_trials.jl model4 julia/results/results_model4_20250711_104216.csv data/Tree2_v3.json data/simulation/simulate_model4.json
 # julia julia/simulate_trials.jl model5 julia/results/results_model5_20250711_164953.csv data/Tree2_v3.json data/simulation/simulate_model5.json

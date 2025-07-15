@@ -9,11 +9,11 @@ def subtree_vals(path_value, choice1, tree_config=None):
     """
     if tree_config == '1':
         if choice1 == 1:
-            # left subtree: indices 0 and 1
-            return path_value[0:2]
+            # left subtree: indices 0
+            return [path_value[0]]
         else:
-            # right subtree: index 2
-            return [path_value[2]]
+            # right subtree: index 1 and 2
+            return [path_value[1], path_value[2]]
     else:
         if choice1 == 1:
             # left subtree: indices 0 and 1
@@ -154,9 +154,9 @@ def add_info_to_json(input_file, output_file, tree_config=None):
     print(f"Saved to {output_file}")
 
 def main():
-    input_file = 'data/simulation/simulate_model2.json'
-    output_file = 'data/v3/simulated_v3_model2.json'
-    add_info_to_json(input_file, output_file, tree_config='2')
+    input_file = 'data/Tree1_sim/simulate_model1.json'
+    output_file = 'data/Tree1_sim/simulated_v3_model1.json'
+    add_info_to_json(input_file, output_file, tree_config='1')
 
 if __name__ == "__main__":
     main() 

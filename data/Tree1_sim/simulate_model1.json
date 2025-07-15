@@ -1,0 +1,2377 @@
+[
+  {
+    "value2": [
+      2,
+      4,
+      2
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      0
+    ],
+    "rt1": 3585,
+    "choice1": 2,
+    "rt": 4774,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      0,
+      2
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -2,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -4,
+      2
+    ],
+    "rt1": 3609,
+    "choice1": 1,
+    "rt": 4797,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -6,
+      1
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -2
+    ],
+    "rt1": 3915,
+    "choice1": 2,
+    "rt": 5104,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -3,
+      -5,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      4,
+      4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      3
+    ],
+    "rt1": 2921,
+    "choice1": 2,
+    "rt": 4110,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -8,
+      0,
+      7
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -1
+    ],
+    "rt1": 3159,
+    "choice1": 1,
+    "rt": 4347,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      -2,
+      3
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      0,
+      4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      2
+    ],
+    "rt1": 3932,
+    "choice1": 2,
+    "rt": 5121,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -4,
+      -2,
+      6
+    ]
+  },
+  {
+    "value2": [
+      -1,
+      -3,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      3,
+      -3
+    ],
+    "rt1": 3191,
+    "choice1": 1,
+    "rt": 4379,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      0,
+      -4
+    ]
+  },
+  {
+    "value2": [
+      3,
+      4,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      0,
+      2
+    ],
+    "rt1": 3341,
+    "choice1": 2,
+    "rt": 4530,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      3,
+      4,
+      -1
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -2,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -1
+    ],
+    "rt1": 3948,
+    "choice1": 1,
+    "rt": 5136,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      -1,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      2,
+      4,
+      1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      0
+    ],
+    "rt1": 6789,
+    "choice1": 2,
+    "rt": 7978,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      0,
+      1
+    ]
+  },
+  {
+    "value2": [
+      4,
+      1,
+      0
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      1,
+      0
+    ],
+    "rt1": 5619,
+    "choice1": 2,
+    "rt": 6808,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      5,
+      2,
+      0
+    ]
+  },
+  {
+    "value2": [
+      1,
+      3,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -4,
+      1
+    ],
+    "rt1": 2537,
+    "choice1": 1,
+    "rt": 3725,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -3,
+      -1,
+      0
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -4,
+      2
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      3
+    ],
+    "rt1": 7643,
+    "choice1": 2,
+    "rt": 8832,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -1,
+      -7,
+      5
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -4,
+      2
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      3
+    ],
+    "rt1": 4040,
+    "choice1": 2,
+    "rt": 5229,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -1,
+      -7,
+      5
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -2,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -4
+    ],
+    "rt1": 5755,
+    "choice1": 1,
+    "rt": 6943,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      5,
+      -1,
+      -7
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -2,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      0,
+      -3
+    ],
+    "rt1": 3342,
+    "choice1": 1,
+    "rt": 4530,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      -2,
+      -6
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -3,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      1
+    ],
+    "rt1": 3255,
+    "choice1": 2,
+    "rt": 4444,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -6,
+      5
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      -2,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      3
+    ],
+    "rt1": 4078,
+    "choice1": 2,
+    "rt": 5267,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -3,
+      7
+    ]
+  },
+  {
+    "value2": [
+      4,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      -1
+    ],
+    "rt1": 5044,
+    "choice1": 1,
+    "rt": 6232,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      8,
+      5,
+      3
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -4,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      3,
+      -3
+    ],
+    "rt1": 3263,
+    "choice1": 1,
+    "rt": 4451,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      6,
+      -1,
+      -5
+    ]
+  },
+  {
+    "value2": [
+      2,
+      0,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -2,
+      -1
+    ],
+    "rt1": 4591,
+    "choice1": 1,
+    "rt": 5779,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -2,
+      -4
+    ]
+  },
+  {
+    "value2": [
+      3,
+      2,
+      0
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -3,
+      -3
+    ],
+    "rt1": 4926,
+    "choice1": 1,
+    "rt": 6114,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -1,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      0,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      2
+    ],
+    "rt1": 2749,
+    "choice1": 2,
+    "rt": 3938,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -3,
+      1
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      -1,
+      1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      2,
+      -3
+    ],
+    "rt1": 7108,
+    "choice1": 1,
+    "rt": 8296,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      1,
+      -2
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      1,
+      1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      1,
+      0
+    ],
+    "rt1": 3410,
+    "choice1": 2,
+    "rt": 4599,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -1,
+      2,
+      1
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      -1,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      1,
+      4
+    ],
+    "rt1": 7035,
+    "choice1": 2,
+    "rt": 8224,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      0,
+      1
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      3,
+      3
+    ],
+    "rt1": 2946,
+    "choice1": 1,
+    "rt": 4134,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      0,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      -4,
+      1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      2
+    ],
+    "rt1": 2807,
+    "choice1": 1,
+    "rt": 3995,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      0,
+      3
+    ]
+  },
+  {
+    "value2": [
+      0,
+      -4,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -4
+    ],
+    "rt1": 3468,
+    "choice1": 2,
+    "rt": 4657,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -4,
+      -8,
+      0
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      0,
+      4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      0
+    ],
+    "rt1": 1977,
+    "choice1": 2,
+    "rt": 3166,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -4,
+      -2,
+      4
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      2
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      0,
+      4
+    ],
+    "rt1": 3121,
+    "choice1": 2,
+    "rt": 4310,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -3,
+      6
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -1
+    ],
+    "rt1": 5489,
+    "choice1": 1,
+    "rt": 6677,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      -2,
+      3
+    ]
+  },
+  {
+    "value2": [
+      -1,
+      -3,
+      3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      1
+    ],
+    "rt1": 5516,
+    "choice1": 2,
+    "rt": 6705,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      -4,
+      4
+    ]
+  },
+  {
+    "value2": [
+      0,
+      -1,
+      0
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      2,
+      -1
+    ],
+    "rt1": 4763,
+    "choice1": 2,
+    "rt": 5952,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      1,
+      -1
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      4,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      -2
+    ],
+    "rt1": 2609,
+    "choice1": 2,
+    "rt": 3798,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      2,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      4,
+      0
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      2,
+      -4
+    ],
+    "rt1": 2469,
+    "choice1": 2,
+    "rt": 3658,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      6,
+      -4
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      3
+    ],
+    "rt1": 2959,
+    "choice1": 2,
+    "rt": 4148,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -6,
+      -2,
+      7
+    ]
+  },
+  {
+    "value2": [
+      3,
+      1,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      -3
+    ],
+    "rt1": 2613,
+    "choice1": 1,
+    "rt": 3801,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      7,
+      5,
+      -5
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      -1,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      1
+    ],
+    "rt1": 4872,
+    "choice1": 2,
+    "rt": 6061,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -3,
+      0
+    ]
+  },
+  {
+    "value2": [
+      -1,
+      -3,
+      3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      1
+    ],
+    "rt1": 3237,
+    "choice1": 2,
+    "rt": 4426,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      -4,
+      4
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -4,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -1,
+      -3
+    ],
+    "rt1": 2661,
+    "choice1": 1,
+    "rt": 3849,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -5,
+      -7
+    ]
+  },
+  {
+    "value2": [
+      4,
+      0,
+      3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      4
+    ],
+    "rt1": 3423,
+    "choice1": 2,
+    "rt": 4612,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -4,
+      7
+    ]
+  },
+  {
+    "value2": [
+      3,
+      2,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      3,
+      -4
+    ],
+    "rt1": 2531,
+    "choice1": 1,
+    "rt": 3719,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      6,
+      5,
+      -7
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      0,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      1
+    ],
+    "rt1": 4836,
+    "choice1": 2,
+    "rt": 6025,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -8,
+      -4,
+      5
+    ]
+  },
+  {
+    "value2": [
+      -1,
+      3,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      4
+    ],
+    "rt1": 2939,
+    "choice1": 2,
+    "rt": 4128,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -1,
+      8
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -1
+    ],
+    "rt1": 5170,
+    "choice1": 2,
+    "rt": 6359,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -7,
+      -3,
+      3
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      4
+    ],
+    "rt1": 2573,
+    "choice1": 2,
+    "rt": 3762,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      -6,
+      7
+    ]
+  },
+  {
+    "value2": [
+      2,
+      0,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      3
+    ],
+    "rt1": 5184,
+    "choice1": 2,
+    "rt": 6373,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -1,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      4,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      0
+    ],
+    "rt1": 4930,
+    "choice1": 1,
+    "rt": 6118,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      8,
+      -1
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      -4,
+      1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -2
+    ],
+    "rt1": 5542,
+    "choice1": 2,
+    "rt": 6731,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -6,
+      -8,
+      -1
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -2,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -4,
+      2
+    ],
+    "rt1": 3609,
+    "choice1": 1,
+    "rt": 4797,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -6,
+      1
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -4,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      3
+    ],
+    "rt1": 3827,
+    "choice1": 1,
+    "rt": 5015,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      -3,
+      1
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      3,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      2,
+      1
+    ],
+    "rt1": 3653,
+    "choice1": 2,
+    "rt": 4842,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      5,
+      0
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      0,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      2,
+      1
+    ],
+    "rt1": 4899,
+    "choice1": 2,
+    "rt": 6088,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      2,
+      -2
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      -3
+    ],
+    "rt1": 2498,
+    "choice1": 2,
+    "rt": 3687,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -4,
+      0,
+      1
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -4,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -2
+    ],
+    "rt1": 2516,
+    "choice1": 1,
+    "rt": 3704,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      -3,
+      -5
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      0,
+      0
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      2
+    ],
+    "rt1": 6190,
+    "choice1": 2,
+    "rt": 7379,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -7,
+      -3,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      -1,
+      1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      2
+    ],
+    "rt1": 4106,
+    "choice1": 2,
+    "rt": 5295,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -3,
+      3
+    ]
+  },
+  {
+    "value2": [
+      2,
+      0,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      4
+    ],
+    "rt1": 2776,
+    "choice1": 2,
+    "rt": 3965,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      -4,
+      8
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -1,
+      0
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      4
+    ],
+    "rt1": 3574,
+    "choice1": 2,
+    "rt": 4763,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -3,
+      -5,
+      4
+    ]
+  },
+  {
+    "value2": [
+      0,
+      3,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      2,
+      3
+    ],
+    "rt1": 4455,
+    "choice1": 2,
+    "rt": 5644,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      5,
+      0
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -2,
+      3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      3
+    ],
+    "rt1": 2558,
+    "choice1": 2,
+    "rt": 3747,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -3,
+      6
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      1
+    ],
+    "rt1": 2816,
+    "choice1": 1,
+    "rt": 4004,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      0,
+      5
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -2,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      1
+    ],
+    "rt1": 5655,
+    "choice1": 2,
+    "rt": 6844,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -1,
+      -5,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -4,
+      2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      0,
+      4
+    ],
+    "rt1": 5977,
+    "choice1": 1,
+    "rt": 7165,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      -4,
+      6
+    ]
+  },
+  {
+    "value2": [
+      3,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      1
+    ],
+    "rt1": 3697,
+    "choice1": 2,
+    "rt": 4886,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -2,
+      5
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -4,
+      3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      2,
+      4
+    ],
+    "rt1": 2682,
+    "choice1": 2,
+    "rt": 3871,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      6,
+      -2,
+      7
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      0,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -3
+    ],
+    "rt1": 4017,
+    "choice1": 1,
+    "rt": 5205,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -3,
+      1,
+      -5
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      0,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -4
+    ],
+    "rt1": 3530,
+    "choice1": 2,
+    "rt": 4719,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -6,
+      -4,
+      0
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -4,
+      1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      -3
+    ],
+    "rt1": 5192,
+    "choice1": 2,
+    "rt": 6381,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -8,
+      -2
+    ]
+  },
+  {
+    "value2": [
+      -1,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      1,
+      3
+    ],
+    "rt1": 3616,
+    "choice1": 2,
+    "rt": 4805,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      2,
+      7
+    ]
+  },
+  {
+    "value2": [
+      2,
+      0,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      3
+    ],
+    "rt1": 4667,
+    "choice1": 2,
+    "rt": 5856,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -1,
+      2
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -1,
+      1
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -1,
+      1
+    ],
+    "rt1": 4094,
+    "choice1": 2,
+    "rt": 5283,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -2,
+      2
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -3,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      -3
+    ],
+    "rt1": 2870,
+    "choice1": 1,
+    "rt": 4058,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      8,
+      1,
+      -7
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -1,
+      -3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      1,
+      -3
+    ],
+    "rt1": 4225,
+    "choice1": 1,
+    "rt": 5413,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      5,
+      0,
+      -6
+    ]
+  },
+  {
+    "value2": [
+      2,
+      3,
+      3
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      2,
+      -3
+    ],
+    "rt1": 3717,
+    "choice1": 1,
+    "rt": 4905,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      5,
+      0
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -2,
+      0
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      2,
+      -2
+    ],
+    "rt1": 3585,
+    "choice1": 1,
+    "rt": 4773,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      5,
+      0,
+      -2
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      4,
+      3
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      1
+    ],
+    "rt1": 4008,
+    "choice1": 2,
+    "rt": 5197,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -7,
+      1,
+      4
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -3,
+      -1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      3,
+      3
+    ],
+    "rt1": 3567,
+    "choice1": 1,
+    "rt": 4755,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      0,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      0,
+      0
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      2
+    ],
+    "rt1": 3827,
+    "choice1": 2,
+    "rt": 5016,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -7,
+      -3,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      1,
+      1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      4,
+      2
+    ],
+    "rt1": 5292,
+    "choice1": 2,
+    "rt": 6481,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      5,
+      3
+    ]
+  },
+  {
+    "value2": [
+      2,
+      4,
+      2
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -3,
+      3
+    ],
+    "rt1": 8206,
+    "choice1": 2,
+    "rt": 9395,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -1,
+      1,
+      5
+    ]
+  },
+  {
+    "value2": [
+      -4,
+      -2,
+      2
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      0
+    ],
+    "rt1": 2281,
+    "choice1": 2,
+    "rt": 3470,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -6,
+      -4,
+      2
+    ]
+  },
+  {
+    "value2": [
+      4,
+      -3,
+      -2
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      -1
+    ],
+    "rt1": 2929,
+    "choice1": 1,
+    "rt": 4117,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      8,
+      1,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      3,
+      4,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      0,
+      1
+    ],
+    "rt1": 4154,
+    "choice1": 2,
+    "rt": 5343,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      3,
+      4,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      4
+    ],
+    "rt1": 3403,
+    "choice1": 2,
+    "rt": 4592,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -1,
+      8
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -1,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      1
+    ],
+    "rt1": 4159,
+    "choice1": 1,
+    "rt": 5347,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      5,
+      3,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      2,
+      4,
+      1
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      -4,
+      0
+    ],
+    "rt1": 5580,
+    "choice1": 2,
+    "rt": 6769,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      0,
+      1
+    ]
+  },
+  {
+    "value2": [
+      2,
+      0,
+      0
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      1,
+      -1
+    ],
+    "rt1": 3660,
+    "choice1": 2,
+    "rt": 4849,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      3,
+      1,
+      -1
+    ]
+  },
+  {
+    "value2": [
+      -3,
+      -1,
+      3
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      1
+    ],
+    "rt1": 5162,
+    "choice1": 2,
+    "rt": 6351,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -5,
+      -3,
+      4
+    ]
+  },
+  {
+    "value2": [
+      1,
+      -2,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 2,
+    "rt2": 1189,
+    "value1": [
+      0,
+      4
+    ],
+    "rt1": 3733,
+    "choice1": 2,
+    "rt": 4922,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      1,
+      -2,
+      0
+    ]
+  },
+  {
+    "value2": [
+      0,
+      2,
+      1
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      -2,
+      0
+    ],
+    "rt1": 8385,
+    "choice1": 1,
+    "rt": 9573,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      -2,
+      0,
+      1
+    ]
+  },
+  {
+    "value2": [
+      2,
+      -4,
+      0
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      -2,
+      2
+    ],
+    "rt1": 2205,
+    "choice1": 2,
+    "rt": 3394,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      0,
+      -6,
+      2
+    ]
+  },
+  {
+    "value2": [
+      -2,
+      -3,
+      -4
+    ],
+    "model": "model1",
+    "choice2": 1,
+    "rt2": 1188,
+    "value1": [
+      4,
+      1
+    ],
+    "rt1": 2748,
+    "choice1": 1,
+    "rt": 3936,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      2,
+      1,
+      -3
+    ]
+  },
+  {
+    "value2": [
+      3,
+      -1,
+      4
+    ],
+    "model": "model1",
+    "choice2": 3,
+    "rt2": 1189,
+    "value1": [
+      1,
+      1
+    ],
+    "rt1": 4293,
+    "choice1": 2,
+    "rt": 5482,
+    "simulation_id": 1,
+    "timeout": false,
+    "wid": "w0c70a81",
+    "rewards": [
+      4,
+      0,
+      5
+    ]
+  }
+]
