@@ -49,7 +49,7 @@ function chance_loglike(trials; rt_tol1=0, rt_tol2=0)
     mapreduce(+, trials) do t
         n_within_tol1 = 1 + min(max_rt1(t), t.rt1 + rt_tol1) - max(1, t.rt1 - rt_tol1)
         n_within_tol2 = 1 + min(max_rt2(t), t.rt2 + rt_tol2) - max(1, t.rt2 - rt_tol2)
-        log(0.5) + log(0.5) + log(n_within_tol1 / max_rt1(t)) + log(n_within_tol2 / max_rt2(t))
+        log(0.5) + log(0.75) + log(n_within_tol1 / max_rt1(t)) + log(n_within_tol2 / max_rt2(t))
     end
 end
 
