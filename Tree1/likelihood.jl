@@ -21,7 +21,7 @@ function sample_choice_rt(m::Model, t::Trial, ε)
         # Lapse trial - random response
         choice1 = rand(1:2)
         if choice1 == 1
-            choice2 = rand(1:2)
+            choice2 = 1
         else
             choice2 = rand(3:4)
         end

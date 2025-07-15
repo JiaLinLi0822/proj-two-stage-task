@@ -140,6 +140,10 @@ def add_info_to_json(input_file, output_file, tree_config=None):
     trials_new = filtered_trials
     print(f"Removed trials with RT > 2 SD and less than 5 instances per difficulty")
     print(f"Removed {len(trials) - len(filtered_trials)} trials")
+
+    # filter out trials with timeout
+    trials_new = [t for t in trials_new if not t['timeout']]
+    print(f"Removed {len(trials) - len(trials_new)} trials with timeout")
     
     # Convert numpy types to Python native types before JSON serialization
     trials_new = [convert_numpy_types(trial) for trial in trials_new]

@@ -66,9 +66,9 @@ Arguments:
 - n_simulations: Number of simulation runs per trial (default: 1)
 """
 function simulate_trials(model_name::String; 
-                        param_file::String = "julia/results_0714.csv",
-                        trial_file::String = "data/Tree2_v3.json",
-                        output_file::String = "data/simulated_$(model_name).json",
+                        param_file::String,
+                        trial_file::String,
+                        output_file::String,
                         n_simulations::Int = 1,
                         random_seed::Int = 42)
     
@@ -163,8 +163,6 @@ function simulate_trials(model_name::String;
                 
                 # Store results
                 result_entry = Dict(
-                    "model" => model_name,
-                    "simulation_id" => sim_idx,
                     "wid" => wid,
                     "rewards" => entry["rewards"],
                     "value1" => entry["value1"],
@@ -257,7 +255,7 @@ end
 
 ### Use example:
 
-# julia Tree1/simulation.jl model1 results/results_model1_20250714_172921.csv data/Tree1_sub/w0c70a81.json data/Tree1_sim/simulate_model1.json
+# julia Tree1/simulation.jl model1 results/Tree1/model1_20250714_191330.csv data/Tree1_v3.json data/Tree1_sim/simulate_model1.json
 # julia julia/simulate_trials.jl model3 julia/results/results_model3_20250710_170323.csv data/Tree2_v3.json data/simulation/simulate_model3.json
 # julia julia/simulate_trials.jl model4 julia/results/results_model4_20250711_104216.csv data/Tree2_v3.json data/simulation/simulate_model4.json
 # julia julia/simulate_trials.jl model5 julia/results/results_model5_20250711_164953.csv data/Tree2_v3.json data/simulation/simulate_model5.json
