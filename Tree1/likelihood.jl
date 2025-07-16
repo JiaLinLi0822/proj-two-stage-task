@@ -23,7 +23,7 @@ function sample_choice_rt(m::Model, t::Trial, ε)
         if choice1 == 1
             choice2 = 1
         else
-            choice2 = rand(3:4)
+            choice2 = rand(2:3)
         end
         rt1 = rand(100.0:max_rt1(t))  # Random RT within reasonable range
         rt2 = rand(100.0:max_rt2(t))
