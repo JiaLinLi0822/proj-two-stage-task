@@ -29,6 +29,26 @@ function load_data_by_subject(filename::String)
     return subject_trials  # Dict{String, Vector{Data}}
 end
 
+"""
+Count trials per participant for BIC calculation.
+Returns a dictionary: participant_id => trial_count
+"""
+function count_trials_per_participant(filename::String)
+    trial_counts = Dict{String, Int}()
+
+    open(filename, "r") do file
+        for line in eachline(file)
+            if !isempty(strip(line))
+                data = JSON.parse(line)
+                wid = data["wid"]
+                trial_counts[wid] = get(trial_counts, wid, 0) + 1
+            end
+        end
+    end
+
+    return trial_counts
+end
+
 # - example -
 # trials_by_subject = load_data_by_subject("data/Tree1_v3.json")
 # println(trials_by_subject)

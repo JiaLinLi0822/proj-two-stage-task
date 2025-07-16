@@ -39,3 +39,23 @@ end
 # # Prepare for parallel fit
 # pairs = collect(trials_by_subject)
 # results = pmap(x -> fit_subject(x[1], x[2]), pairs)
+
+"""
+Count trials per participant for BIC calculation.
+Returns a dictionary: participant_id => trial_count
+"""
+function count_trials_per_participant(filename::String)
+    trial_counts = Dict{String, Int}()
+
+    open(filename, "r") do file
+        for line in eachline(file)
+            if !isempty(strip(line))
+                data = JSON.parse(line)
+                wid = data["wid"]
+                trial_counts[wid] = get(trial_counts, wid, 0) + 1
+            end
+        end
+    end
+
+    return trial_counts
+end

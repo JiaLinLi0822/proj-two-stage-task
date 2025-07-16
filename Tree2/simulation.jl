@@ -269,3 +269,7 @@ end
 # julia julia/simulate_trials.jl model10 julia/results/results_model10_20250711_210758.csv data/Tree2_v3.json data/simulation/simulate_model10.json
 # julia julia/simulate_trials.jl model14 julia/results/results_model14_20250711_213056.csv data/Tree2_v3.json data/simulation/simulate_model14.json
 
+# julia Tree2/simulation.jl model11 Tree2/results/results_model11_20250715_105324.csv data/Tree2_v3.json data/Tree2_sim/simulate_model11.json
+# julia Tree2/simulation.jl model12 Tree2/results/results_model12_20250715_164230.csv data/Tree2_v3.json data/Tree2_sim/simulate_model12.json
+# julia Tree2/simulation.jl model13 Tree2/results/results_model13_20250715_213720.csv data/Tree2_v3.json data/Tree2_sim/simulate_model13.json
+

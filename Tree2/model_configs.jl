@@ -18,6 +18,7 @@ struct ModelConfig
     plausible_bounds::Box
     initial_params::Dict{Symbol, Float64}
     param_names::Vector{String}  # Parameter names for CSV storage
+    param_nums::Int              # Number of parameters for BIC calculation
     description::String
 end
 
@@ -45,6 +46,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d1", "d2", "θ1", "θ2", "T1", "T2"],
+        6,
         "Primary two-stage independent paths model"
     ),
 
@@ -64,6 +66,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d1", "d2", "θ1", "θ2", "T1", "T2"],
+        6,
         "Two-stage correlated paths model"
     ),
 
@@ -85,6 +88,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :θ_prun => linear_bounds(0.01, 1.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0, :θ_prun => 0.3),
         ["d1", "d2", "θ1", "θ2", "T1", "T2", "θ_prun"],
+        7,
         "Two-stage independent paths with pruning"
     ),
 
@@ -106,6 +110,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :θ_prun => linear_bounds(0.01, 1.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0, :θ_prun => 0.3),
         ["d1", "d2", "θ1", "θ2", "T1", "T2", "θ_prun"],
+        7,
         "Two-stage correlated paths with pruning"
     ),
 
@@ -123,6 +128,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d => 7e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d", "θ1", "θ2", "T1", "T2"],
+        5,
         "Two-stage independent paths with single drift rate"
     ),
 
@@ -142,6 +148,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d1", "d2", "θ1", "θ2", "T1", "T2"],
+        6,
         "Forward greedy search model"
     ),
 
@@ -165,6 +172,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d0 => 7e-5, :d1 => 8e-5, :d2 => 6e-5, :θ0 => 0.4, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d0", "d1", "d2", "θ0", "θ1", "θ2", "T1", "T2"],
+        8,
         "Backward search model"
     ),
 
@@ -184,6 +192,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d0 => 7e-5, :d2 => 6e-5, :θ0 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d0", "d2", "θ0", "θ2", "T1", "T2"],
+        6,
         "Backward search with shared parameters"
     ),
 
@@ -207,6 +216,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d0 => 7e-5, :d1 => 8e-5, :d2 => 6e-5, :θ0 => 0.4, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d0", "d1", "d2", "θ0", "θ1", "θ2", "T1", "T2"],
+        8,
         "Backward search with reset"
     ),
 
@@ -226,6 +236,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d0 => 7e-5, :d2 => 6e-5, :θ0 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d0", "d2", "θ0", "θ2", "T1", "T2"],
+        6,
         "Backward search with reset and shared parameters"
     ),
 
@@ -245,6 +256,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d => 7e-5, :θ0 => 0.6, :vigor1 => 1.0, :vigor2 => 1.2, :T1 => 500.0, :T2 => 500.0),
         ["d", "θ0", "vigor1", "vigor2", "T1", "T2"],
+        6,
         "One-stage parallel integration with vigor"
     ),
 
@@ -262,6 +274,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d => 7e-5, :θ0 => 0.6, :vigor => 1.0, :T1 => 500.0, :T2 => 500.0),
         ["d", "θ0", "vigor", "T1", "T2"],
+        5,
         "One-stage parallel integration with single vigor"
     ),
 
@@ -283,6 +296,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :rating_sd => log_bounds(0.01, 0.5)),
         Dict(:d => 7e-5, :θ0 => 0.6, :vigor1 => 1.0, :vigor2 => 1.2, :T1 => 500.0, :T2 => 500.0, :rating_sd => 0.1),
         ["d", "θ0", "vigor1", "vigor2", "T1", "T2", "rating_sd"],
+        7,
         "One-stage parallel integration with vigor and rating noise"
     ),
 
@@ -302,6 +316,7 @@ const MODEL_CONFIGS = OrderedDict{String, ModelConfig}(
             :T2 => linear_bounds(50.0, 8000.0)),
         Dict(:d1 => 8e-5, :d2 => 6e-5, :θ1 => 0.5, :θ2 => 0.8, :T1 => 500.0, :T2 => 500.0),
         ["d1", "d2", "θ1", "θ2", "T1", "T2"],
+        6,
         "Two-stage with average-based first stage"
     )
 )

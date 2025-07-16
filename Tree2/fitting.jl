@@ -161,6 +161,10 @@ function run_model_fitting(model_name::String;
     subject_trials = load_data_by_subject(data_file)
     println("Loaded data for $(length(subject_trials)) subjects")
     
+    # Count trials per participant for BIC calculation
+    println("Counting trials per participant for BIC calculation...")
+    trial_counts = count_trials_per_participant(data_file)
+    
     # Run parallel fitting
     println("Starting parallel fitting...")
     pairs = collect(subject_trials)
@@ -173,14 +177,22 @@ function run_model_fitting(model_name::String;
     config = get_model_config(model_name)
     param_names = config.param_names  # Use the dedicated param_names from model_configs
     n_params = length(param_names)
+    param_count = config.param_nums    # Get parameter count for BIC
     
     # Create DataFrame with dynamic columns using real parameter names from model_configs
-    column_names = [:wid; Symbol.(param_names); :neglogl]
-    column_types = [String; fill(Float64, n_params); Float64]
+    # Include BIC, parameter count, and trial count
+    column_names = [:wid; Symbol.(param_names); :neglogl; :param_count; :n_trials; :bic]
+    column_types = [String; fill(Float64, n_params); Float64; Int; Int; Float64]
     df = DataFrame([T[] for T in column_types], column_names)
     
     for (wid, θ, negll, _) in results
-        row_data = [wid; θ; negll]
+        # Get trial count for this participant
+        n_trials = get(trial_counts, wid, 0)
+        
+        # Calculate BIC: k * log(n) + 2 * neglogl
+        bic = param_count * log(n_trials) + 2 * negll
+        
+        row_data = [wid; θ; negll; param_count; n_trials; bic]
         push!(df, row_data)
     end
     
@@ -241,7 +253,7 @@ function compare_models(model_names::Vector{String};
             model_name,
             mean(df.neglogl),
             std(df.neglogl),
-            length(config.parameter_box.dims),
+            config.param_nums,
             config.description
         ))
     end

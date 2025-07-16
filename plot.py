@@ -36,33 +36,49 @@ for entry in real_data:
 # for entry in model5_data:
 #     entry["source"] = "model5"
 
-with open("results/Tree2/v3/simulated_v3_model6.json", "r") as f_sim:
-    model6_data = [json.loads(line) for line in f_sim]
-for entry in model6_data:
-    entry["source"] = "model6"
+# with open("results/Tree2/v3/simulated_v3_model6.json", "r") as f_sim:
+#     model6_data = [json.loads(line) for line in f_sim]
+# for entry in model6_data:
+#     entry["source"] = "model6"
 
-with open("results/Tree2/v3/simulated_v3_model7.json", "r") as f_sim:
-    model7_data = [json.loads(line) for line in f_sim]
-for entry in model7_data:
-    entry["source"] = "model7"
+# with open("results/Tree2/v3/simulated_v3_model7.json", "r") as f_sim:
+#     model7_data = [json.loads(line) for line in f_sim]
+# for entry in model7_data:
+#     entry["source"] = "model7"
 
-with open("results/Tree2/v3/simulated_v3_model8.json", "r") as f_sim:
-    model8_data = [json.loads(line) for line in f_sim]
-for entry in model8_data:
-    entry["source"] = "model8"
+# with open("results/Tree2/v3/simulated_v3_model8.json", "r") as f_sim:
+#     model8_data = [json.loads(line) for line in f_sim]
+# for entry in model8_data:
+#     entry["source"] = "model8"
 
-with open("results/Tree2/v3/simulated_v3_model9.json", "r") as f_sim:
-    model9_data = [json.loads(line) for line in f_sim]
-for entry in model9_data:
-    entry["source"] = "model9"
+# with open("results/Tree2/v3/simulated_v3_model9.json", "r") as f_sim:
+#     model9_data = [json.loads(line) for line in f_sim]
+# for entry in model9_data:
+#     entry["source"] = "model9"
 
-with open("results/Tree2/v3/simulated_v3_model10.json", "r") as f_sim:
-    model10_data = [json.loads(line) for line in f_sim]
-for entry in model10_data:
-    entry["source"] = "model10"
+# with open("results/Tree2/v3/simulated_v3_model10.json", "r") as f_sim:
+#     model10_data = [json.loads(line) for line in f_sim]
+# for entry in model10_data:
+#     entry["source"] = "model10"
+
+with open("results/Tree2/v3/simulated_v3_model11.json", "r") as f_sim:
+    model11_data = [json.loads(line) for line in f_sim]
+for entry in model11_data:
+    entry["source"] = "model11"
+
+with open("results/Tree2/v3/simulated_v3_model12.json", "r") as f_sim:
+    model12_data = [json.loads(line) for line in f_sim]
+for entry in model12_data:
+    entry["source"] = "model12"
+
+with open("results/Tree2/v3/simulated_v3_model13.json", "r") as f_sim:
+    model13_data = [json.loads(line) for line in f_sim]
+for entry in model13_data:
+    entry["source"] = "model13"
 
 # df = real_data + model1_data + model2_data + model3_data + model4_data + model5_data
-df = real_data + model6_data + model7_data + model8_data + model9_data + model10_data
+# df = real_data + model6_data + model7_data + model8_data + model9_data + model10_data
+df = real_data + model11_data + model12_data + model13_data
 df = pd.DataFrame(df)
 
 

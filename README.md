@@ -12,7 +12,7 @@ There are two folders, for tree configuration 1 and configuration 2. In each fol
 - `model_configs.jl` - Model configuration definitions with parameter bounds
 - `fitting.jl` - Main fitting script with flexible model selection
 - `example.jl` - Usage examples and demonstrations
-- `box.jl` - Parameter constraint management system
+- `box.jl` - Parameter constraint management
 
 ## Available Models
 
@@ -195,7 +195,7 @@ Modify bounds in `model_configs.jl`:
 The system automatically uses parallel processing:
 
 ```julia
-# Modify number of workers in main_flexible.jl
+# Modify number of workers in main.jl
 addprocs(8)  # Use 8 workers instead of 4
 ```
 
