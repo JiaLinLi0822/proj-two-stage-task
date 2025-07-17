@@ -213,7 +213,7 @@ end
 Compare multiple models by fitting them to the same data.
 """
 function compare_models(model_names::Vector{String}; 
-                       data_file::String = "data/Tree2_v3.json")
+                       data_file::String = "data/Tree1_v3.json")
     
     println("="^60)
     println("Model Comparison")
@@ -283,7 +283,7 @@ end
 Example: Fit a single model
 """
 function example_single_model()
-    results = run_model_fitting("model1", data_file="data/Tree1_sub/w0e2f500.json")
+    results = run_model_fitting("model1")
 end
 
 """

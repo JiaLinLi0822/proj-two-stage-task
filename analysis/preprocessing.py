@@ -158,9 +158,9 @@ def add_info_to_json(input_file, output_file, tree_config=None):
     print(f"Saved to {output_file}")
 
 def main():
-    input_file = 'data/Tree2_sim/simulate_model13.json'
-    output_file = 'data/Tree2_sim/simulated_v3_model13.json'
-    add_info_to_json(input_file, output_file, tree_config='2') 
+    input_file = 'data/Tree1_sim/simulate_model1.json'
+    output_file = 'data/Tree1_sim/simulated_v3_model1.json'
+    add_info_to_json(input_file, output_file, tree_config='1') 
 
 if __name__ == "__main__":
     main() 

@@ -255,7 +255,7 @@ end
 
 ### Use example:
 
-# julia Tree1/simulation.jl model1 results/Tree1/model1_20250714_191330.csv data/Tree1_v3.json data/Tree1_sim/simulate_model1.json
+# julia Tree1/simulation.jl model1 results/Tree1/model1_20250716_144618.csv data/Tree1_v3.json data/Tree1_sim/simulate_model1.json
 # julia julia/simulate_trials.jl model3 julia/results/results_model3_20250710_170323.csv data/Tree2_v3.json data/simulation/simulate_model3.json
 # julia julia/simulate_trials.jl model4 julia/results/results_model4_20250711_104216.csv data/Tree2_v3.json data/simulation/simulate_model4.json
 # julia julia/simulate_trials.jl model5 julia/results/results_model5_20250711_164953.csv data/Tree2_v3.json data/simulation/simulate_model5.json

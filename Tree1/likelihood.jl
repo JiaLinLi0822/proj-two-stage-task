@@ -21,9 +21,9 @@ function sample_choice_rt(m::Model, t::Trial, ε)
         # Lapse trial - random response
         choice1 = rand(1:2)
         if choice1 == 1
-            choice2 = 1
+            choice2 = rand(1:2)
         else
-            choice2 = rand(2:3)
+            choice2 = 3
         end
         rt1 = rand(100.0:max_rt1(t))  # Random RT within reasonable range
         rt2 = rand(100.0:max_rt2(t))
