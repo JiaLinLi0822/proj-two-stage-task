@@ -39,7 +39,14 @@ function BadsProcess(conf::BadsConfig)
     conf = JSON.json(conf)
 
     script_dir = @__DIR__
-    proc = run(pipeline(`python $script_dir/bads.py $conf`; stdin, stdout, stderr), wait = false)
+    # Use the same Python that PyCall uses to avoid environment conflicts
+    python_cmd = try
+        PyCall.python
+    catch
+        # Fallback to system python if PyCall is not available
+        "python"
+    end
+    proc = run(pipeline(`$python_cmd $script_dir/bads.py $conf`; stdin, stdout, stderr), wait = false)
 
     process_running(proc) || error("There was a problem.")
     BadsProcess(stdin, stdout, proc, String[], :active)

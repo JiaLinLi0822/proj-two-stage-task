@@ -1,6 +1,9 @@
 include("ibs.jl")
 include("data.jl")
+include("model.jl")
+include("pda.jl")
 
+# ======== IBS Likelihood Functions ========
 function max_rt1(t::Trial)
     # Maximum reasonable reaction time (in ms)
     return 10000.0
@@ -59,5 +62,66 @@ function ibs_loglike(m::Model, trials::Vector{Trial}; repeats=1, max_iter=1000, 
         is_hit(sample_choice_rt(m, t, ε), t, rt_tol1, rt_tol2)
     end
     return result
+end
+
+
+
+
+# ======== PDA Likelihood Functions ========
+
+"""
+    pda_loglike_single_trial(θ, trial, model_func; J=2000, kwargs...)
+
+Calculate PDA-based log-likelihood for a single trial using the specified model function.
+
+Args:
+- θ: Parameter vector
+- trial: Trial struct
+- model_func: Model function to use
+- J: Number of simulations for PDA
+- kwargs: Additional arguments for PDA functions
+
+Returns:
+- log-likelihood value for the trial
+"""
+function pda_loglike_single_trial(θ::Vector{Float64}, trial::Trial, model_func::Function;
+                                   J::Int=1000,
+                                   kde_mode::Symbol=:gaussian,       # :product or :gaussian
+                                   bw_rule::Symbol=:silverman,       # for :gaussian
+                                   logRT::Bool=true,
+                                   eps_floor::Float64=1e-16,
+                                   lambda::Float64=1.0)
+    results = simulate_batch(model_func, θ, trial.rewards, J)
+    pairs = [(1,1), (1,2), (2,3), (2,4)]  # Tree2
+    spdf = build_mixed2d_spdf(results, trial;
+                              pairs=pairs, kde_mode=kde_mode, bw_rule=bw_rule, logRT=logRT,
+                              eps_floor=eps_floor)
+    return mixed2d_logpdf(spdf, trial, lambda)
+end
+
+"""
+    pda_loglike(θ, trials, model_func; J=2000, kwargs...)
+
+Calculate PDA-based log-likelihood for a vector of trials.
+
+Args:
+- θ: Parameter vector
+- trials: Vector of Trial structs
+- model_func: Model function to use
+- J: Number of simulations for PDA
+- kwargs: Additional arguments for PDA functions
+
+Returns:
+- Total log-likelihood across all trials
+"""
+function pda_loglike(θ::Vector{Float64}, trials::Vector{Trial}, model_func::Function;
+                    J::Int=1000, kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman,
+                    logRT::Bool=true, eps_floor::Float64=1e-16, lambda::Float64=1.0)
+    total_ll = 0.0
+    for trial in trials
+        total_ll += pda_loglike_single_trial(θ, trial, model_func; J=J,
+                                            kde_mode=kde_mode, bw_rule=bw_rule,logRT=logRT,eps_floor=eps_floor,lambda=lambda)
+    end
+    return total_ll
 end
 

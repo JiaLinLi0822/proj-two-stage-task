@@ -3,11 +3,11 @@ include("data.jl")
 
 struct Model
     simulate::Function
-    θ::Vector{Float64} # parameters
+    φ::Vector{Float64} # parameters
 end
 
 function simulate(m::Model, trial::Trial)
-    m.simulate(m.θ, trial.rewards)
+    m.simulate(m.φ, trial.rewards)
 end
 
 
@@ -29,18 +29,19 @@ Model behavior:
 - Second stage: Only considers paths from chosen side (L or R)
 - Final choice: Determined by argmax of remaining evidence
 """
-function model1(θ::Vector{Float64}, rewards::Vector{Float64})
+function model1(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
+
     sigma       = 0.01
 
     # initialize evidence for four paths
     E = zeros(4) # [LL, LR, RL, RR]
     timeout = false
-
-    # R_L, R_R, R_LL, R_LR, R_RL, R_RR -> 1, 2, 3, 4, 5, 6
 
     # --- first stage ---
     t = 0
@@ -50,10 +51,10 @@ function model1(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        if t == max_step
-            timeout = true
-            break
-        end
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
         # update evidence for each path
         E[1] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[3] + randn()*sigma)
         E[2] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[4] + randn()*sigma)
@@ -61,12 +62,15 @@ function model1(θ::Vector{Float64}, rewards::Vector{Float64})
         E[4] += (d1 * rewards[2]  + randn()*sigma) + (d1 * rewards[6] + randn()*sigma)
 
         # check if the leading difference exceeds threshold θ1
-        sorted_E = sort(E, rev=true)
-        if sorted_E[1] - sorted_E[2] ≥ θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
             rt1 = t + T1
-            # find the key with the maximum value
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
     end
@@ -87,10 +91,10 @@ function model1(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t2 += 1
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -99,10 +103,9 @@ function model1(θ::Vector{Float64}, rewards::Vector{Float64})
             E2[2] += (d2 * rewards[6] + randn()*sigma)
         end
 
-        sorted_E2 = sort(E2, rev=true)
-        if abs(sorted_E2[1] - sorted_E2[2]) ≥ θ2
+        if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -114,7 +117,7 @@ function model1(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -142,11 +145,13 @@ Model behavior:
 - Second stage: Only considers paths from chosen side (L or R)
 - Final choice: Determined by argmax of remaining evidence
 """
-function model2(θ::Vector{Float64}, rewards::Vector{Float64})
+function model2(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -161,10 +166,10 @@ function model2(θ::Vector{Float64}, rewards::Vector{Float64})
     # --- first stage ---
     while true
         t += 1
-        if t >= max_step
-            timeout = true
-            break
-        end
+        # if t >= max_step
+        #     timeout = true
+        #     break
+        # end
 
         # Correlated noise for R_L and R_R
         noise_L = randn() * sigma
@@ -177,12 +182,16 @@ function model2(θ::Vector{Float64}, rewards::Vector{Float64})
         E[4] += (d1 * rewards[2] + noise_R) + (d1 * rewards[6] + randn()*sigma)
 
         # check if the leading difference exceeds threshold θ1
-        sorted_E = sort(E, rev=true)
-        if sorted_E[1] - sorted_E[2] ≥ θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
             rt1 = t + T1
             # find the key with the maximum value
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
     end
@@ -202,10 +211,10 @@ function model2(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        if t2 >= max_step
-            timeout = true
-            break
-        end
+        # if t2 >= max_step
+        #     timeout = true
+        #     break
+        # end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -214,10 +223,9 @@ function model2(θ::Vector{Float64}, rewards::Vector{Float64})
             E2[2] += (d2 * rewards[6] + randn()*sigma)
         end
 
-        sorted_E2 = sort(E2, rev=true)
-        if abs(sorted_E2[1] - sorted_E2[2]) ≥ θ2
+        if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -229,7 +237,7 @@ function model2(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -258,12 +266,14 @@ Model behavior:
 - Second stage: Only considers paths from chosen side (L or R)
 - Final choice: Determined by argmax of remaining evidence
 """
-function model3(θ::Vector{Float64}, rewards::Vector{Float64})
+function model3(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
-    θ_prun      = θ[7]
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
+    θ_prun      = φ[7]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -278,10 +288,10 @@ function model3(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        if t == max_step
-            timeout = true
-            break
-        end
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
         # update evidence for each path
         E[1] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[3] + randn()*sigma)
         E[2] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[4] + randn()*sigma)
@@ -289,20 +299,23 @@ function model3(θ::Vector{Float64}, rewards::Vector{Float64})
         E[4] += (d1 * rewards[2]  + randn()*sigma) + (d1 * rewards[6] + randn()*sigma)
 
         # check if the leading difference exceeds threshold θ1
-        sorted_E = sort(E, rev=true)
-        if sorted_E[1] - sorted_E[2] ≥ θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
             rt1 = t + T1
             # find the key with the maximum value
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
 
         # pruning
         if min(E[1], E[2]) - max(E[3], E[4]) ≥ θ_prun || min(E[3], E[4]) - max(E[1], E[2]) ≥ θ_prun
             rt1 = t + T1
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
     end
@@ -322,10 +335,10 @@ function model3(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -334,10 +347,9 @@ function model3(θ::Vector{Float64}, rewards::Vector{Float64})
             E2[2] += (d2 * rewards[6] + randn()*sigma)
         end
 
-        sorted_E2 = sort(E2, rev=true)
-        if abs(sorted_E2[1] - sorted_E2[2]) ≥ θ2
+        if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -349,7 +361,7 @@ function model3(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -380,12 +392,14 @@ Model behavior:
 - Second stage: Only considers paths from chosen side (L or R)
 - Final choice: Determined by argmax of remaining evidence
 """
-function model4(θ::Vector{Float64}, rewards::Vector{Float64})
+function model4(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
-    θ_prun      = θ[7]
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
+    θ_prun      = φ[7]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -400,10 +414,10 @@ function model4(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        if t == max_step
-            timeout = true
-            break
-        end
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
     
         # Correlated noise for R_L and R_R
         noise_L = randn() * sigma
@@ -416,20 +430,23 @@ function model4(θ::Vector{Float64}, rewards::Vector{Float64})
         E[4] += (d1 * rewards[2] + noise_R) + (d1 * rewards[6] + randn()*sigma)
 
         # check if the leading difference exceeds threshold θ1
-        sorted_E = sort(E, rev=true)
-        if sorted_E[1] - sorted_E[2] ≥ θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
             rt1 = t + T1
             # find the key with the maximum value
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
 
         # pruning
         if min(E[1], E[2]) - max(E[3], E[4]) ≥ θ_prun || min(E[3], E[4]) - max(E[1], E[2]) ≥ θ_prun
             rt1 = t + T1
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
     end
@@ -449,10 +466,10 @@ function model4(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -461,10 +478,9 @@ function model4(θ::Vector{Float64}, rewards::Vector{Float64})
             E2[2] += (d2 * rewards[6] + randn()*sigma)
         end
 
-        sorted_E2 = sort(E2, rev=true)
-        if abs(sorted_E2[1] - sorted_E2[2]) ≥ θ2
+        if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -476,7 +492,7 @@ function model4(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -504,11 +520,13 @@ Model behavior:
 - Final choice: Determined by argmax of remaining evidence
 - Note: Uses same drift rate (d) for both stages, reducing parameter count
 """
-function model5(θ::Vector{Float64}, rewards::Vector{Float64})
+function model5(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d           = θ[1]
-    θ1, θ2      = θ[2], θ[3]
-    T1, T2      = θ[4], θ[5]
+    d           = φ[1]
+    θ1          = φ[2]
+    Δ           = φ[3]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[4], φ[5]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -523,10 +541,10 @@ function model5(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        if t == max_step
-            timeout = true
-            break
-        end
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
         # update evidence for each path
         E[1] += (d * rewards[1]  + randn()*sigma) + (d * rewards[3] + randn()*sigma)
         E[2] += (d * rewards[1]  + randn()*sigma) + (d * rewards[4] + randn()*sigma)
@@ -534,12 +552,16 @@ function model5(θ::Vector{Float64}, rewards::Vector{Float64})
         E[4] += (d * rewards[2]  + randn()*sigma) + (d * rewards[6] + randn()*sigma)
 
         # check if the leading difference exceeds threshold θ1
-        sorted_E = sort(E, rev=true)
-        if sorted_E[1] - sorted_E[2] ≥ θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
             rt1 = t + T1
             # find the key with the maximum value
-            idx   = argmax(E)
-            choice1 = idx <= 2 ? 1 : 2
+            choice1 = maxidx <= 2 ? 1 : 2
             break
         end
     end
@@ -560,10 +582,10 @@ function model5(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t2 += 1
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
         if choice1 == 1 
             E2[1] += (d * rewards[3] + randn()*sigma)
             E2[2] += (d * rewards[4] + randn()*sigma)
@@ -572,10 +594,9 @@ function model5(θ::Vector{Float64}, rewards::Vector{Float64})
             E2[2] += (d * rewards[6] + randn()*sigma)
         end
 
-        sorted_E2 = sort(E2, rev=true)
-        if abs(sorted_E2[1] - sorted_E2[2]) ≥ θ2
+        if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -587,7 +608,7 @@ function model5(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -616,11 +637,11 @@ Model behavior:
 - Final choice: Determined by argmax within chosen side
 - Note: Greedy approach - makes first decision without considering full tree
 """
-function model6(θ::Vector{Float64}, rewards::Vector{Float64})
+function model6(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
+    d1, d2      = φ[1], φ[2]
+    θ1, θ2      = φ[3], φ[4]
+    T1, T2      = φ[5], φ[6]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -635,10 +656,10 @@ function model6(θ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        if t == max_step
-            timeout = true
-            break
-        end
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
 
         # accumulate into first stage integrators
         E1[1] += (d1 * rewards[1]  + randn()*sigma)
@@ -653,7 +674,7 @@ function model6(θ::Vector{Float64}, rewards::Vector{Float64})
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # --- second stage ---
@@ -664,10 +685,10 @@ function model6(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
@@ -679,7 +700,7 @@ function model6(θ::Vector{Float64}, rewards::Vector{Float64})
 
         if abs(E2[1] - E2[2]) ≥ θ2
             rt2    = t2 + T2
-            choice2_idx = argmax(E2)
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
             # Map back to original choice2 encoding
             if choice1 == 1
                 choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
@@ -691,7 +712,7 @@ function model6(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -721,11 +742,11 @@ Model behavior:
 - Stage 2: Unfreezes chosen branch for final choice within that side
 - Note: Backward approach - evaluates leaves first, then works up the tree
 """
-function model7(θ::Vector{Float64}, rewards::Vector{Float64})
+function model7(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d0, d1, d2  = θ[1], θ[2], θ[3]
-    θ0, θ1, θ2  = θ[4], θ[5], θ[6]
-    T1, T2      = θ[7], θ[8]
+    d0, d1, d2  = φ[1], φ[2], φ[3]
+    θ0, θ1, θ2  = φ[4], φ[5], φ[6]
+    T1, T2      = φ[7], φ[8]
     sigma       = 0.01
 
     timeout = false
@@ -737,10 +758,10 @@ function model7(θ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        if tL == max_step
-            timeout = true
-            break
-        end
+        # if tL == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -750,17 +771,17 @@ function model7(θ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        if tR == max_step
-            timeout = true
-            break
-        end
+        # if tR == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # Determine winning leaf and its value
@@ -777,10 +798,10 @@ function model7(θ::Vector{Float64}, rewards::Vector{Float64})
     while true
         t1 += 1
 
-        if t1 == max_step
-            timeout = true
-            break
-        end
+        # if t1 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_top_L += d1 * rewards[1] + randn()*sigma
         E_top_R += d1 * rewards[2] + randn()*sigma
@@ -812,10 +833,10 @@ function model7(θ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -824,7 +845,7 @@ function model7(θ::Vector{Float64}, rewards::Vector{Float64})
     choice2 = (v1 > v2) ? (choice1 == 1 ? 1 : 3) : (choice1 == 1 ? 2 : 4)
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -852,11 +873,11 @@ Model behavior:
 - Stage 2: Unfreezes chosen branch for final choice within that side
 - Note: Uses same drift rate and threshold for stages 0 and 1, reducing parameters
 """
-function model8(θ::Vector{Float64}, rewards::Vector{Float64})
+function model8(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d0, d2      = θ[1], θ[2]
-    θ0, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
+    d0, d2      = φ[1], φ[2]
+    θ0, θ2      = φ[3], φ[4]
+    T1, T2      = φ[5], φ[6]
     sigma       = 0.01
 
     timeout = false
@@ -868,10 +889,10 @@ function model8(θ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        if tL == max_step
-            timeout = true
-            break
-        end
+        # if tL == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -881,10 +902,10 @@ function model8(θ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        if tR == max_step
-            timeout = true
-            break
-        end
+        # if tR == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
@@ -908,10 +929,10 @@ function model8(θ::Vector{Float64}, rewards::Vector{Float64})
     while true
         t1 += 1
 
-        if t1 == max_step
-            timeout = true
-            break
-        end
+        # if t1 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_top_L += d0 * rewards[1] + randn()*sigma
         E_top_R += d0 * rewards[2] + randn()*sigma
@@ -943,10 +964,10 @@ function model8(θ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -955,7 +976,7 @@ function model8(θ::Vector{Float64}, rewards::Vector{Float64})
     choice2 = (v1 > v2) ? (choice1 == 1 ? 1 : 3) : (choice1 == 1 ? 2 : 4)
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -986,11 +1007,11 @@ Model behavior:
 - Stage 2: Unfreezes chosen branch for final choice within that side
 - Note: Reset mechanism - evidence accumulation starts fresh in stage 1
 """
-function model9(θ::Vector{Float64}, rewards::Vector{Float64})
+function model9(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d0, d1, d2  = θ[1], θ[2], θ[3]
-    θ0, θ1, θ2  = θ[4], θ[5], θ[6]
-    T1, T2      = θ[7], θ[8]
+    d0, d1, d2  = φ[1], φ[2], φ[3]
+    θ0, θ1, θ2  = φ[4], φ[5], φ[6]
+    T1, T2      = φ[7], φ[8]
     sigma       = 0.01
 
     timeout = false
@@ -1002,10 +1023,10 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        if tL == max_step
-            timeout = true
-            break
-        end
+        # if tL == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -1015,17 +1036,17 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        if tR == max_step
-            timeout = true
-            break
-        end
+        # if tR == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # Determine winning leaf and its value
@@ -1044,10 +1065,10 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t1 += 1
-        if t1 >= max_step
-            timeout = true
-            break
-        end
+        # if t1 >= max_step
+        #     timeout = true
+        #     break
+        # end
 
         # accumulate trunk + winning‐leaf in parallel
         E_top_L += (d1*rewards[1] + randn()*sigma) + (d1*rewards[winL] + randn()*sigma)
@@ -1062,7 +1083,7 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # --- Stage 2: Unfreeze chosen branch (additive DDM, Eq. S2) ---
@@ -1079,10 +1100,10 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -1091,7 +1112,7 @@ function model9(θ::Vector{Float64}, rewards::Vector{Float64})
     choice2 = (v1 > v2) ? (choice1 == 1 ? 1 : 3) : (choice1 == 1 ? 2 : 4)
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1120,11 +1141,11 @@ Model behavior:
 - Stage 2: Unfreezes chosen branch for final choice within that side
 - Note: Uses same drift rate and threshold for stages 0 and 1, with reset mechanism
 """
-function model10(θ::Vector{Float64}, rewards::Vector{Float64})
+function model10(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d0, d2  = θ[1], θ[2]
-    θ0, θ2  = θ[3], θ[4]
-    T1, T2  = θ[5], θ[6]
+    d0, d2  = φ[1], φ[2]
+    θ0, θ2  = φ[3], φ[4]
+    T1, T2  = φ[5], φ[6]
     sigma       = 0.01
 
     timeout = false
@@ -1136,10 +1157,10 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        if tL == max_step
-            timeout = true
-            break
-        end
+        # if tL == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -1149,17 +1170,17 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        if tR == max_step
-            timeout = true
-            break
-        end
+        # if tR == max_step
+        #     timeout = true
+        #     break
+        # end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # Determine winning leaf and its value
@@ -1178,10 +1199,10 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t1 += 1
-        if t1 >= max_step
-            timeout = true
-            break
-        end
+        # if t1 >= max_step
+        #     timeout = true
+        #     break
+        # end
 
         # accumulate trunk + winning‐leaf in parallel
         E_top_L += (d0*rewards[1] + randn()*sigma) + (d0*rewards[winL] + randn()*sigma)
@@ -1196,7 +1217,7 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
     end
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     # --- Stage 2: Unfreeze chosen branch (additive DDM, Eq. S2) ---
@@ -1213,10 +1234,10 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        if t2 == max_step
-            timeout = true
-            break
-        end
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -1225,7 +1246,7 @@ function model10(θ::Vector{Float64}, rewards::Vector{Float64})
     choice2 = (v1 > v2) ? (choice1 == 1 ? 1 : 3) : (choice1 == 1 ? 2 : 4)
 
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1255,12 +1276,12 @@ Model behavior:
 - RT2 = T2 + vigor2 * (rmax - r2w)
 - Note: One-stage model with vigor-based response time modulation
 """
-function model11(θ::Vector{Float64}, rewards::Vector{Float64})
+function model11(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d              = θ[1]
-    θ0             = θ[2]
-    vigor1, vigor2 = θ[3], θ[4]
-    T1, T2         = θ[5], θ[6]
+    d              = φ[1]
+    θ0             = φ[2]
+    vigor1, vigor2 = φ[3], φ[4]
+    T1, T2         = φ[5], φ[6]
     sigma          = 0.01
 
     # initialize evidence for four paths
@@ -1321,7 +1342,7 @@ function model11(θ::Vector{Float64}, rewards::Vector{Float64})
     rt2 += T2 + vigor2 * (rmax - r2w)
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1349,12 +1370,12 @@ Model behavior:
 - RT2 = T2 + vigor * (rmax - r2w)
 - Note: Uses single vigor parameter for both stages, reducing parameter count
 """
-function model12(θ::Vector{Float64}, rewards::Vector{Float64})
+function model12(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d              = θ[1]
-    θ0             = θ[2]
-    vigor          = θ[3]
-    T1, T2         = θ[4], θ[5]
+    d              = φ[1]
+    θ0             = φ[2]
+    vigor          = φ[3]
+    T1, T2         = φ[4], φ[5]
     sigma          = 0.01
 
     # initialize evidence for four paths
@@ -1415,7 +1436,7 @@ function model12(θ::Vector{Float64}, rewards::Vector{Float64})
     rt2 += T2 + vigor * (rmax - r2w)
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1447,13 +1468,13 @@ Model behavior:
 - RT2 = T2 + vigor2 * (rmax - r2w)
 - Note: Incorporates rating uncertainty in addition to vigor effects
 """
-function model13(θ::Vector{Float64}, rewards::Vector{Float64})
+function model13(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d              = θ[1]
-    θ0             = θ[2]
-    vigor1, vigor2 = θ[3], θ[4]
-    T1, T2         = θ[5], θ[6]
-    rating_sd      = θ[7]
+    d              = φ[1]
+    θ0             = φ[2]
+    vigor1, vigor2 = φ[3], φ[4]
+    T1, T2         = φ[5], φ[6]
+    rating_sd      = φ[7]
     sigma          = 0.01
 
     # initialize evidence for four paths
@@ -1517,7 +1538,7 @@ function model13(θ::Vector{Float64}, rewards::Vector{Float64})
     rt2 += T2 + vigor2 * (rmax - r2w)
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1548,11 +1569,13 @@ Model behavior:
 - Final choice: Determined by argmax within chosen side
 - Note: First stage uses average of leaf values rather than full tree evaluation
 """
-function model14(θ::Vector{Float64}, rewards::Vector{Float64})
+function model14(φ::Vector{Float64}, rewards::Vector{Float64})
     # parameters
-    d1, d2      = θ[1], θ[2]
-    θ1, θ2      = θ[3], θ[4]
-    T1, T2      = θ[5], θ[6]
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
     sigma       = 0.01
 
     # initialize evidence for four paths
@@ -1644,7 +1667,7 @@ function model14(θ::Vector{Float64}, rewards::Vector{Float64})
     end
     
     if timeout
-        return (choice1=-1, rt1=-1, choice2=-1, rt2=-1, timeout=true)
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
 
     return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
@@ -1654,28 +1677,52 @@ end
 
 
 
-# - example -
-# theta = [8e-5, 6e-5, 0.5, 0.8, 500.0, 500.0]
-theta = [7e-5, 8e-5, 6e-5, 0.4, 0.5, 0.8, 500.0, 500.0]
+# ======== Batch simulation function for PDA ========
+"""
+    simulate_batch(model_func, φ, rewards, J)
 
-# # Create a Model instance
-model = Model(model10, theta)
+Generic batch simulation function that accepts any model function.
+"""
+function simulate_batch(model_func::Function, φ::Vector{Float64}, rewards::Vector{Float64}, J::Int)
 
-# Create a Trial instance
-trial = Trial(
-    [4.0, -1.0, 2.0, -3.0, -3.0, 1.0],
-    1,
-    1,
-    0.0,
-    0.0
-)
+    results = []
+    
+    for i in 1:J
+        result = model_func(φ, rewards)
+        
+        # # Skip timeout trials
+        # if result.timeout
+        #     continue
+        # end
+        
+        push!(results, result)
+    end
+    
+    return results
+end
 
-# simulate
-result = model.simulate(model.θ, trial.rewards)
+# # - example -
+# # theta = [8e-5, 6e-5, 0.5, 0.8, 500.0, 500.0]
+# theta = [7e-5, 8e-5, 6e-5, 0.4, 0.5, 0.8, 500.0, 500.0]
 
-# result containts: choice1, rt1, choice2, rt2, timeout
-println("choice1 = ", result.choice1)  # 1 或 2
-println("rt1     = ", result.rt1)
-println("choice2 = ", result.choice2)  # 1 到 4
-println("rt2     = ", result.rt2)
-println("timeout = ", result.timeout)
+# # # Create a Model instance
+# model = Model(model10, theta)
+
+# # Create a Trial instance
+# trial = Trial(
+#     [4.0, -1.0, 2.0, -3.0, -3.0, 1.0],
+#     1,
+#     1,
+#     0.0,
+#     0.0
+# )
+
+# # simulate
+# result = model.simulate(model.θ, trial.rewards)
+
+# # result containts: choice1, rt1, choice2, rt2, timeout
+# println("choice1 = ", result.choice1)  # 1 或 2
+# println("rt1     = ", result.rt1)
+# println("choice2 = ", result.choice2)  # 1 到 4
+# println("rt2     = ", result.rt2)
+# println("timeout = ", result.timeout)

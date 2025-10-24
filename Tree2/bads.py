@@ -9,7 +9,7 @@ import logging
 if len(sys.argv) < 2:
     print("EXCEPTION Missing config JSON", flush=True)
     sys.exit(1)
-# print("GOT_CONF", sys.argv[1], flush=True)
+    # print("GOT_CONF", sys.argv[1], flush=True)
 
 class NumpyEncoder(json.JSONEncoder):
     def default(self, obj):
@@ -32,6 +32,7 @@ def jsonify(obj):
 def target(x):
     print("REQUEST_EVALUATION", x.tolist())
     y = json.loads(input())
+    # print("GOT_Y", y, flush=True)
     if isinstance(y, list):
         return tuple(y)
     else:
@@ -42,7 +43,11 @@ try:
     args = [conf[k] for k in ["x0", "lower_bounds", "upper_bounds", "plausible_lower_bounds", "plausible_upper_bounds"]]
 
     if conf['options'].get('specify_target_noise'):
+        conf['options']['specify_target_noise'] = True
+    
+    if conf['options'].get('uncertainty_handling'):
         conf['options']['uncertainty_handling'] = True
+    
     bads = BADS(target, *args, options=conf["options"])
     result = bads.optimize()
     del result['fun']

@@ -1,43 +1,93 @@
 import json
 import numpy as np
 
-def subtree_vals(path_value, choice1, tree_config=None):
+def calculate_diff1(path):
     """
-    For the first Solway tree configuration:
-      - Left subtree has only one leaf (index 0)
-      - Right subtree has two leaves (indices 1,2)
+    Calculate stage 1 difficulty:
+    max path reward minus mean of other path rewards.
     """
-    if tree_config == '1':
-        if choice1 == 1:
-            # left subtree: indices 0
-            return [path_value[0]]
-        else:
-            # right subtree: index 1 and 2
-            return [path_value[1], path_value[2]]
-    else:
-        if choice1 == 1:
-            # left subtree: indices 0 and 1
-            return path_value[0:2]
-        else:
-            # right subtree: indices 2 and 3
-            return path_value[2:4]
+    path = np.array(path)
+    idx_max = np.argmax(path)
+    others = np.delete(path, idx_max)
+    return path[idx_max] - np.mean(others)
 
-def calculate_diff1(rewards):
-    """Stage 1 difficulty: max reward minus mean of other rewards."""
-    idx_max = np.argmax(rewards)
-    others = [r for i,r in enumerate(rewards) if i != idx_max]
-    return float(rewards[idx_max] - np.mean(others))
 
-def calculate_diff2(value2, choice1, tree_config=None):
+def calculate_diff2(v2, choice1):
     """
-    Stage 2 difficulty:
-      - If chosen subtree has only one leaf, return -1
-      - Otherwise, absolute difference between the two leaf values
+    Calculate stage 2 difficulty for Tree1.
+    If chosen subtree has only one leaf, return -1.
+    Otherwise, return absolute difference between two leaf values.
     """
-    vals = subtree_vals(value2, choice1, tree_config)
+    vals = subtree_vals(v2, choice1)
     if len(vals) < 2:
         return -1.0
-    return float(abs(vals[0] - vals[1]))
+    return abs(vals[0] - vals[1])
+
+
+def subtree_vals(v2, choice1):
+    """
+    Return leaf values in the chosen subtree.
+    - Left subtree (choice1 == 1): indices 0,1
+    - Middle subtree (choice1 == 2): indices 2,3
+    - Right subtree (choice1 == 3): index 4
+    """
+    if choice1 == 1:
+        return v2[0:2]
+    elif choice1 == 2:
+        return v2[2:4]
+    else:
+        return [v2[4]]
+
+def correct1(best_path_idx, choice1):
+    return ((best_path_idx in [0, 1]) and (choice1 == 1) or
+            (best_path_idx in [2, 3]) and (choice1 == 2) or
+            (best_path_idx == 4) and (choice1 == 3))
+
+
+def correct2(v2, choice1, choice2):
+    vals = subtree_vals(v2, choice1)
+    if choice1 == 1:
+        local = choice2 - 1
+        return vals[local] == max(vals)
+    elif choice1 == 2:
+        local = choice2 - 3
+        return vals[local] == max(vals)
+    else:
+        return True
+
+
+def subtree_relation_code(path):
+    """
+    Relation between best path and other path locations.
+    Return:
+    1 = best in right subtree
+    2..5 = best and kth-best in same subtree
+    """
+    path = np.array(path)
+    # sortperm in descending order: indices of sorted elements
+    idx_desc = np.argsort(-path)  # negative for descending
+    best, second, third, fourth, worst = idx_desc
+
+    def subtree(i):
+        # left=0, middle=1, right=2
+        if i <= 1:
+            return 0
+        elif i <= 3:
+            return 1
+        else:
+            return 2
+
+    if best == 4:
+        return 1  # best in right subtree (only one leaf)
+    elif subtree(best) == subtree(second):
+        return 2
+    elif subtree(best) == subtree(third):
+        return 3
+    elif subtree(best) == subtree(fourth):
+        return 4
+    elif subtree(best) == subtree(worst):
+        return 5
+
 
 def convert_numpy_types(obj):
     """Convert numpy types to Python native types for JSON serialization"""
@@ -54,113 +104,60 @@ def convert_numpy_types(obj):
     else:
         return obj
 
-def add_info_to_json(input_file, output_file, tree_config=None):
-    # Read the original JSON file
-    # with open(input_file, 'r') as f:
-    #     trials = [json.loads(line) for line in f]
+def add_info_to_json(input_file, output_file):
 
+    trials = []
     with open(input_file) as f:
-        trials = json.load(f)
+        for line in f:
+            line = line.strip()
+            if line:  # Skip empty lines
+                trials.append(json.loads(line))
 
     # Add difficulties to each trial
     for trial in trials:
+
+        trial['best_path_idx'] = np.argmax(trial['path_rewards'])
         # Calculate stage 1 difficulty
-        trial['diff1'] = round(calculate_diff1(trial['rewards']))
+        trial['diff1'] = calculate_diff1(trial['path_rewards'])
         
         # Calculate stage 2 difficulty
-        trial['diff2'] = calculate_diff2(trial['value2'], trial['choice1'], tree_config)
+        trial['diff2'] = calculate_diff2(trial['value2'], trial['choice1'])
 
-        # Calculate overall trial difficulty from rewards
-        trial['difficulty'] = calculate_diff1(trial['rewards'])
-    
-    # Group trials by participant
-    participant_trials = {}
-    for trial in trials:
-        wid = trial['wid']
-        if wid not in participant_trials:
-            participant_trials[wid] = []
-        participant_trials[wid].append(trial)
-    
-    # Process each participant's trials
-    filtered_trials = []
-    for wid, p_trials in participant_trials.items():
-        
-        # # Calculate RT statistics
-        # rt1_mean = np.mean([t['rt1'] for t in p_trials])
-        # rt1_std = np.std([t['rt1'] for t in p_trials])
-        # rt1_threshold = rt1_mean + 2*rt1_std
-        
-        # rt2_mean = np.mean([t['rt2'] for t in p_trials])
-        # rt2_std = np.std([t['rt2'] for t in p_trials])
-        # rt2_threshold = rt2_mean + 2*rt2_std
-        
-        # rt_mean = np.mean([t['rt'] for t in p_trials])
-        # rt_std = np.std([t['rt'] for t in p_trials])
-        # rt_threshold = rt_mean + 2*rt_std
-        
-        # Count trials per difficulty level
-        difficulty_counts = {}
-        for trial in p_trials:
-            diff = trial['difficulty']
-            if diff not in difficulty_counts:
-                difficulty_counts[diff] = 0
-            difficulty_counts[diff] += 1
+        # Calculate overall trial difficulty from path
+        trial['difficulty'] = calculate_diff1(trial['path_rewards'])
 
-        # remove trials with rt1 < 500 or (rt1 or rt2) > 10000
-        # p_trials = [t for t in p_trials if t['rt1'] >= 500 and (t['rt1'] <= 10000 and t['rt2'] <= 10000)]
-        
-        # Remove trials with less than 3 instances per difficulty
-        # p_trials = [t for t in p_trials if difficulty_counts[t['difficulty']] > 5]
-        # Filter trials
-        # valid_trials = []
-        # for trial in p_trials:
-        #     if (trial['rt1'] <= rt1_threshold and 
-        #         trial['rt2'] <= rt2_threshold and
-        #         trial['rt'] <= rt_threshold):
-        #         valid_trials.append(trial)
-                
-        # filtered_trials.extend(valid_trials)
-        filtered_trials.extend(p_trials)
+        # Calculate correct1
+        trial['correct1'] = int(correct1(trial['best_path_idx'], trial['choice1']))
 
-    # Filter out participants with too few trials
-    participant_trial_counts = {}
-    for trial in filtered_trials:
-        wid = trial['wid']
-        if wid not in participant_trial_counts:
-            participant_trial_counts[wid] = 0
-        participant_trial_counts[wid] += 1
-    
-    # Keep only trials from participants with >= 70 trials
-    filtered_trials = [t for t in filtered_trials if participant_trial_counts[t['wid']] >= 70]
-    
-    print(f"Removed participants with fewer than 70 trials")
-    print(f"Participants remaining: {len(set(t['wid'] for t in filtered_trials))}")
-    
-    # Update trials list
-    trials_new = filtered_trials
-    print(f"Removed trials with RT > 2 SD and less than 5 instances per difficulty")
-    print(f"Removed {len(trials) - len(filtered_trials)} trials")
+        # Calculate correct2
+        trial['correct2'] = int(correct2(trial['value2'], trial['choice1'], trial['choice2']))
 
-    # filter out trials with timeout
-    trials_new = [t for t in trials_new if not t['timeout']]
-    print(f"Removed {len(trials) - len(trials_new)} trials with timeout")
+        # Calculate correct_all
+        trial['correct_all'] = int(trial['correct1'] and trial['correct2'])
+
+        trial['subtree_relation'] = subtree_relation_code(trial['path_rewards'])
+
+
+        trial['rt1'] = np.exp(trial['rt1'])
+        trial['rt2'] = np.exp(trial['rt2'])
+        trial['rt'] = np.exp(trial['rt'])
     
     # Convert numpy types to Python native types before JSON serialization
-    trials_new = [convert_numpy_types(trial) for trial in trials_new]
+    trials = [convert_numpy_types(trial) for trial in trials]
     
     # Write the modified data to a new JSON file
     with open(output_file, 'w') as f:
-        for trial in trials_new:
+        for trial in trials:
             json.dump(trial, f)
             f.write('\n')
     
-    print(f"Added difficulties to {len(trials_new)} trials")
+    print(f"Added Information to {len(trials)} trials")
     print(f"Saved to {output_file}")
 
 def main():
-    input_file = 'data/Tree1_sim/simulate_model1.json'
-    output_file = 'data/Tree1_sim/simulated_v3_model1.json'
-    add_info_to_json(input_file, output_file, tree_config='1') 
+    input_file = 'Tree3/data/trial3_v7.json'
+    output_file = 'Tree3/data/Tree3_v3.json'
+    add_info_to_json(input_file, output_file) 
 
 if __name__ == "__main__":
     main() 

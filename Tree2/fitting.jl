@@ -1,27 +1,38 @@
 # fitting.jl
-# Flexible model fitting script using the model configuration system
-# Easy model switching and parameter management
 
 using Distributed
 using Dates
 
-addprocs(4)
+
+if myid() == 1 && nprocs() == 1 && !haskey(ENV, "SLURM_JOB_ID")
+    n = try
+        parse(Int, get(ENV, "SLURM_CPUS_PER_TASK", "1")) - 1
+    catch
+        0
+    end
+    n = max(n, 1)
+    @info "Adding $n local workers (non-SLURM environment)"
+    addprocs(n)
+end
 
 @everywhere begin
+    using LinearAlgebra
+    LinearAlgebra.BLAS.set_num_threads(1)
+
     include("ibs.jl")
     include("model.jl")
     include("likelihood.jl")
     include("data.jl")
     include("bads.jl")
     include("model_configs.jl")
+    include("pda.jl")
 
-    using JSON, DataFrames, CSV, Logging
+    using JSON, DataFrames, CSV, Logging, Random, BlackBoxOptim
     disable_logging(Logging.Warn)
 end
 
-# Fit a single subject using the specified model configuration.
-# This function runs on all workers for parallel processing.
-@everywhere function fit_subject(wid, trials, model_name::String)
+@everywhere function fit_subject(wid, trials, model_name::String, likelihood_method::String="ibs";
+                                kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE)
     
     # Get model configuration
     config = get_model_config(model_name)
@@ -62,21 +73,31 @@ end
             x = Float64.(x_unit)
             θ_dict = box(x)
             θ = [θ_dict[name] for name in param_names]
-            model = Model(config.model_function, θ)
-    
-            res = ibs_loglike(model, trials;
-                              repeats  = 10,
-                              max_iter = 1000,
-                              ε        = 0.05,
-                              rt_tol1  = 1000,
-                              rt_tol2  = 1000,
-                              min_multiplier = 0.8)
+            
+            if likelihood_method == "ibs"
+                model = Model(config.model_function, θ)
         
-            neg_ll = res.neg_logp
-    
-            if !isfinite(neg_ll) || neg_ll < 0
-                @error "Worker $(myid()): Bad negative log-likelihood estimate for $wid: $neg_ll"
-                return 1e6
+                res = ibs_loglike(model, trials;
+                                  repeats  = 10,
+                                  max_iter = 1000,
+                                  ε        = 0.05,
+                                  rt_tol1  = 1000,
+                                  rt_tol2  = 1000,
+                                  min_multiplier = 0.8)
+            
+                neg_ll = res.neg_logp
+            elseif likelihood_method == "pda"
+
+                ll =  pda_loglike(θ, trials, 
+                                  config.model_function;
+                                  J=J, 
+                                  kde_mode=kde_mode, 
+                                  bw_rule=bw_rule, 
+                                  eps_floor=eps_floor,
+                                  lambda=lambda)
+                neg_ll = -ll
+            else
+                error("Unknown likelihood method: $likelihood_method. Use 'ibs' or 'pda'.")
             end
     
             return Float64(neg_ll)
@@ -88,34 +109,52 @@ end
     end
     
     try
-        bads_result = optimize_bads(objective_function;
-            x0 = x0,
-            lower_bounds = lbs,
-            upper_bounds = ubs, 
-            plausible_lower_bounds = plbs,
-            plausible_upper_bounds = pubs,
-            max_fun_evals = 100,
-            uncertainty_handling = true
-        )
-        
-        result_dict = get_result(bads_result)
-        xopt_unit_any = result_dict["x"]
-        fopt = result_dict["fval"]
-        
-        xopt_unit     = Float64.(xopt_unit_any)
-        real_xopt     = box(xopt_unit)
+        optimizer_label = optimizer == :DE ? "DE" : "BADS"
+        if optimizer == :BADS
+            bads_result = optimize_bads(objective_function;
+                x0 = x0,
+                lower_bounds = lbs,
+                upper_bounds = ubs, 
+                plausible_lower_bounds = plbs,
+                plausible_upper_bounds = pubs,
+                max_fun_evals = 1000,
+                uncertainty_handling = false,
+                specify_target_noise = false,
+            )
+            result_dict = get_result(bads_result)
+            xopt_unit_any = result_dict["x"]
+            fopt = result_dict["fval"]
+            xopt_unit = Float64.(xopt_unit_any)
 
+        elseif optimizer == :DE
+            search_range = [(plbs[i], pubs[i]) for i in 1:n]
+            result = bboptimize(objective_function;
+                Method = :de_rand_1_bin,
+                LowerBounds = lbs,
+                UpperBounds = ubs,
+                SearchRange = search_range,
+                NumDimensions = n,
+                MaxFuncEvals = 2000,
+                TraceMode = :compact,
+                # TraceInterval = 50,
+                FitnessTolerance = 1e-2,
+            )
+            xopt_unit = Float64.(best_candidate(result))
+            fopt = Float64(best_fitness(result))
+        end
+
+        real_xopt     = box(xopt_unit)
         xopt = [real_xopt[name] for name in param_names]
 
-        println("Worker $(myid()): BADS completed for subject $wid ($(eval_count[]) evaluations)")
-        println("Worker $(myid()): Subject $wid - Final θ = $xopt, negLL = $fopt")
+        println("Worker $(myid()): $optimizer completed for subject $wid ($(eval_count[]) evaluations)")
+        println("Worker $(myid()): Subject $wid - $optimizer_label - Final θ = $xopt, negLL = $fopt")
         
-        return wid, xopt, fopt, param_names
+        return wid, xopt, fopt, param_names, optimizer_label
         
     catch e
-        @error "Worker $(myid()): BADS failed for subject $wid" exception=(e, catch_backtrace())
+        @error "Worker $(myid()): $optimizer_label failed for subject $wid" exception=(e, catch_backtrace())
         # If BADS fails, return the initial point and a large function value
-        return wid, x0, 1e6, param_names
+        return wid, x0, 1e6, param_names, optimizer_label
     end
 end
 
@@ -123,15 +162,26 @@ end
 Run model fitting for all subjects using the specified model.
 """
 function run_model_fitting(model_name::String; 
-                          data_file::String = "data/Tree2_v3.json",
-                          output_file::Union{String, Nothing} = nothing)
+                          data_file::String = "Tree2/data/Tree2_v3.json",
+                          output_file::Union{String, Nothing} = nothing,
+                          likelihood_method::String = "ibs",
+                          kde_mode::Symbol = :gaussian,
+                          bw_rule::Symbol = :silverman,
+                          J::Int = 1000,
+                          eps_floor::Float64 = 1e-16,
+                          lambda::Float64 = 1.0,
+                          optimizer::Symbol = :DE)
     
     # Validate model name
     config = get_model_config(model_name)
     
     # Set default output file name
     if output_file === nothing
-        output_file = "results/Tree2/$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+        if likelihood_method == "pda"
+            output_file = "Tree2/results/pda/$(model_name)_$(likelihood_method)_$(optimizer)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+        else
+            output_file = "Tree2/results/ibs/$(model_name)_$(likelihood_method)_$(optimizer)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+        end
     end
 
     # Create output directory if it doesn't exist
@@ -145,6 +195,15 @@ function run_model_fitting(model_name::String;
     println("="^60)
     println("Model: $model_name")
     println("Description: $(config.description)")
+    println("Likelihood method: $likelihood_method")
+    println("Optimizer: $optimizer")
+    if likelihood_method == "pda"
+        println("PDA Configuration:")
+        println("  KDE mode: $kde_mode")
+        println("  Bandwidth rule: $bw_rule")
+        println("  Eps floor: $eps_floor")
+        println("  Simulations per trial: $J")
+    end
     println("Data file: $data_file")
     println("Output file: $output_file")
     println("Parameter bounds:")
@@ -168,39 +227,32 @@ function run_model_fitting(model_name::String;
     # Run parallel fitting
     println("Starting parallel fitting...")
     pairs = collect(subject_trials)
-    results = pmap(x -> fit_subject(x[1], x[2], model_name), pairs)
+    results = pmap(x -> fit_subject(x[1], x[2], model_name, likelihood_method; 
+                                   kde_mode=kde_mode, bw_rule=bw_rule, J=J, eps_floor=eps_floor, lambda=lambda, optimizer=optimizer), pairs)
     
     # Collect and save results
     println("Collecting results...")
     
     # Get parameter names from model_configs
     config = get_model_config(model_name)
-    param_names = config.param_names  # Use the dedicated param_names from model_configs
+    param_names = config.param_names
     n_params = length(param_names)
-    param_count = config.param_nums    # Get parameter count for BIC
+    param_count = config.param_nums
     
-    # Create DataFrame with dynamic columns using real parameter names from model_configs
-    # Include BIC, parameter count, and trial count
-    column_names = [:wid; Symbol.(param_names); :neglogl; :param_count; :n_trials; :bic]
-    column_types = [String; fill(Float64, n_params); Float64; Int; Int; Float64]
+    column_names = [:wid; Symbol.(param_names); :neglogl; :param_count; :n_trials; :bic; :optimizer]
+    column_types = [String; fill(Float64, n_params); Float64; Int; Int; Float64; String]
     df = DataFrame([T[] for T in column_types], column_names)
     
-    for (wid, θ, negll, _) in results
-        # Get trial count for this participant
+    for (wid, θ, negll, _, optimizer) in results
         n_trials = get(trial_counts, wid, 0)
-        
-        # Calculate BIC: k * log(n) + 2 * neglogl
         bic = param_count * log(n_trials) + 2 * negll
-        
-        row_data = [wid; θ; negll; param_count; n_trials; bic]
+        row_data = [wid; θ; negll; param_count; n_trials; bic; optimizer]
         push!(df, row_data)
     end
     
-    # Save results
     CSV.write(output_file, df)
     println("Results saved to: $output_file")
     
-    # Display summary statistics
     println("\nFitting Summary:")
     println("Successfully fitted $(length(results)) subjects")
     println("Mean negative log-likelihood: $(round(mean(df.neglogl), digits=2))")
@@ -209,105 +261,14 @@ function run_model_fitting(model_name::String;
     return df
 end
 
-"""
-Compare multiple models by fitting them to the same data.
-"""
-function compare_models(model_names::Vector{String}; 
-                       data_file::String = "data/Tree2_v3.json")
-    
-    println("="^60)
-    println("Model Comparison")
-    println("="^60)
-    println("Models to compare: $(join(model_names, ", "))")
-    println("Data file: $data_file")
-    println("="^60)
-    
-    results = Dict{String, DataFrame}()
-    
-    for model_name in model_names
-        println("\nFitting model: $model_name")
-        output_file = "results/comparison_$(model_name)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
-        results[model_name] = run_model_fitting(model_name; 
-                                               data_file=data_file, 
-                                               output_file=output_file)
-    end
-    
-    # Create comparison summary
-    println("\n" * "="^60)
-    println("Model Comparison Summary")
-    println("="^60)
-    
-    comparison_df = DataFrame(
-        model = String[],
-        mean_neglogl = Float64[],
-        std_neglogl = Float64[],
-        n_params = Int[],
-        description = String[]
-    )
-    
-    for model_name in model_names
-        df = results[model_name]
-        config = get_model_config(model_name)
-        
-        push!(comparison_df, (
-            model_name,
-            mean(df.neglogl),
-            std(df.neglogl),
-            config.param_nums,
-            config.description
-        ))
-    end
-    
-    # Sort by mean negative log-likelihood (lower is better)
-    sort!(comparison_df, :mean_neglogl)
-    
-    println(comparison_df)
-    
-    # Save comparison summary
-    comparison_file = "results/model_comparison_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
-    CSV.write(comparison_file, comparison_df)
-    println("\nComparison summary saved to: $comparison_file")
-    
-    return results, comparison_df
+
+function run_pda_fitting(model_name::String; kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE, kwargs...)
+    return run_model_fitting(model_name; likelihood_method="pda", kde_mode=kde_mode, bw_rule=bw_rule, J=J, eps_floor=eps_floor, kwargs...)
 end
 
-# Example usage functions
-"""
-Show available models and their descriptions.
-"""
-function show_models()
-    list_models()
+function run_ibs_fitting(model_name::String; optimizer::Symbol=:DE, kwargs...)
+    return run_model_fitting(model_name; likelihood_method="ibs", kwargs...)
 end
 
-"""
-Example: Fit a single model
-"""
-function example_single_model()
-    results = run_model_fitting("model2")
-end
 
-"""
-Example: Compare multiple models
-"""
-function example_model_comparison()
-    # Compare different two-stage models
-    model_names = ["model1", "model2", "model5", "model11"]
-    results, comparison = compare_models(model_names)
-    return results, comparison
-end
-
-# Print usage instructions when script is loaded
-println("="^60)
-println("Model Fitting")
-println("="^60)
-println("Available functions:")
-println("  show_models()              - List all available models")
-println("  run_model_fitting(model)   - Fit a specific model")
-println("  compare_models([models])   - Compare multiple models")
-println("  example_single_model()     - Example: fit model1")
-println("  example_model_comparison() - Example: compare models")
-println("="^60)
-println("To get started, try: show_models()")
-println("="^60)
-
-example_single_model()
+# run_pda_fitting("model6"; kde_mode=:gaussian, bw_rule=:silverman, J=1000, lambda=1.0, optimizer=:DE)
