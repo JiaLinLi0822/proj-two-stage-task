@@ -1,7 +1,11 @@
-# Planning in the tree search
-This Repository is the codes for planning in the tree search task. There are eleven locations (states), each labeled with different shapes, the number of points one would gain or lose are described in the figure below. Participants obtained the points by moving the to the different locations(rewards). The current state is highlighted in blue and current actions are indicated by orange arrows; participants select actions by pressing the 'F' they wish to move to. Once the move is made by pressing the 'J', the decision is final—they cannot reverse the action or revisit previous states. The trial ends when the participant reaches a state with no outgoing arrows. The participant’s goal is to visit a sequence of states that maximizes the total points earned. The online experiment can be visited on [here](https://solway-761f14246dd1.herokuapp.com/ad?assignmentId=debugCX4gW&hitId=debugNeiqU&workerId=debug61359&mode=debug)
+# proj-joint-model-two-stage
+This Repository is the codes for the submission to Proceedings of Cognitive Science Conference: "Joint Modeling of Choices and Response Times in Multi-stage Decisions via Likelihood Approximation"
 
-![image-20250714164257067](images/task.png)
+### Task
+
+There are eleven locations (states), each labeled with different shapes, the number of points one would gain or lose are described in the figure below. Participants obtained the points by moving the to the different locations(rewards). The current state is highlighted in blue and current actions are indicated by orange arrows; participants select actions by pressing the 'F' they wish to move to. Once the move is made by pressing the 'J', the decision is final—they cannot reverse the action or revisit previous states. The trial ends when the participant reaches a state with no outgoing arrows. The participant’s goal is to visit a sequence of states that maximizes the total points earned. The online experiment can be visited on [here](https://solway-761f14246dd1.herokuapp.com/ad?assignmentId=debugCX4gW&hitId=debugNeiqU&workerId=debug61359&mode=debug)
+
+![image-20250714164257067](figures/Fig1.png)
 
 ## Overview
 
@@ -134,12 +138,12 @@ For model1 (two-stage independent paths):
 
 ## Output Files
 
-### Single Model Fitting
+#### Single Model Fitting
 
 - CSV file with columns: `wid, [parameter_names], neglogl`
 - Automatic timestamped filename: `results_model1_20231201_143022.csv`
 
-### Model Comparison
+#### Model Comparison
 
 - Individual CSV files for each model
 - Summary comparison CSV with model rankings
@@ -205,31 +209,6 @@ addprocs(8)  # Use 8 workers instead of 4
 # Use different data file
 results = run_model_fitting("model1"; data_file="data/custom_data.json")
 ```
-
-## Troubleshooting
-
-### Common Issues
-
-1. **Model not found**: Check spelling and use `show_models()` to see available models
-2. **Parameter errors**: Check model configuration in `model_configs.jl`
-3. **Data loading errors**: Verify data file path and format
-4. **Memory issues**: Reduce number of parallel workers
-
-### Debug Mode
-
-Add debug prints to track fitting progress:
-
-```julia
-# In objective_function, add:
-println("Worker $(myid()): θ = $θ, negLL = $neg_ll")
-```
-
-## Performance Tips
-
-1. **Use appropriate number of workers** based on your CPU cores
-2. **Start with fewer subjects** for testing
-3. **Use tighter parameter bounds** if you have prior knowledge
-4. **Monitor memory usage** for large datasets
 
 ---
 
