@@ -1,0 +1,7 @@
+analysis,factor,dv,n_complete_subjects,n_levels,df_num,df_den,F,p,partial_eta_squared
+stage1_accuracy_by_difficulty,difficulty,correct1,8,10,9.0,63.0,10.71447572575049,7.041127946258194e-10,0.6048429483112213
+stage1_log_rt_by_difficulty_correct1,difficulty,log_rt1,8,10,9.0,63.0,16.140622789411196,2.502267084268313e-13,0.6975016591514082
+stage2_accuracy_by_value_difference,diff2,correct2,45,8,7.0,308.0,14.954923568427205,8.364900037547392e-17,0.2536670843287495
+stage2_log_rt_by_value_difference_correct2,diff2,log_rt2,45,8,7.0,308.0,23.611638806461297,1.2552840725938187e-25,0.34922447116020583
+stage1_accuracy_by_tree_configuration,tree_configuration,correct1,45,3,2.0,88.0,90.77411423525618,4.066608566391934e-22,0.6735278117042907
+stage1_log_rt_by_tree_configuration_correct1,tree_configuration,log_rt1,45,3,2.0,88.0,72.7622819350419,2.241839460844554e-19,0.6231659807361557

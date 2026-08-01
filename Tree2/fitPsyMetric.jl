@@ -270,7 +270,7 @@ end
             MaxFuncEvals = NumFuncEvals,
             TraceMode = :compact,
             # TraceInterval = 50,
-            FitnessTolerance = 1e-2,
+            FitnessTolerance = 1e-4,
         )
         xopt_unit = Float64.(best_candidate(result))
         fopt = Float64(best_fitness(result))
@@ -307,17 +307,9 @@ function main(; data_file::String = "Tree2/data/Tree2_v3.json", model_name::Stri
     n_trials_total = length(trials)
     n_participants = length(unique([tr.wid for tr in trials]))
     
-    wid, θ, rss, _ = fit_model("ALL", trials, model_name; optimizer = optimizer)
+    wid, θ, rss, _ = fit_model("ALL", trials, model_name; optimizer = optimizer, NumFuncEvals = NumFuncEvals)
 
-    # Simulate with best params and save JSON after add_info
-    df_sim = simulate_trials(trials, θ, config)
-    df_sim = add_info(df_sim)
-    json_out = "Tree2/data/Tree2_sim/simulate_$(model_name)_RSS.json"
-    write_to_json(df_sim, json_out)
-    println("Simulated trials saved to: " * json_out)
-    
-    # Get parameter names from model configuration
-    config = get_model_config(model_name)
+    # Save fitting results (parameters, RSS, BIC)
     param_names = config.param_names
     n_params = length(param_names)
     param_count = config.param_nums
@@ -339,4 +331,4 @@ function main(; data_file::String = "Tree2/data/Tree2_v3.json", model_name::Stri
     return df
 end
 
-# main(; data_file = "Tree2/data/Tree2_v3.json", model_name = "model11", optimizer = :de, NumFuncEvals = 10000) 
+# main(; data_file = "Tree2/data/Tree2_v3.json", model_name = "model5", optimizer = :de, NumFuncEvals = 2000) 

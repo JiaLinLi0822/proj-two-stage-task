@@ -1,0 +1,2 @@
+run,true_θ1,true_Δ,fitted_θ1,fitted_Δ,neg_log_likelihood,n_trials_generated,n_trials_fitted
+1,0.8686620289604172,0.22490193565237926,0.5,0.5,1.0e6,100,100

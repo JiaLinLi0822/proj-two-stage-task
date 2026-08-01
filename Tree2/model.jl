@@ -78,7 +78,6 @@ function model1(φ::Vector{Float64}, rewards::Vector{Float64})
     # --- second stage ---
     t2 = 0
     rt2 = 0.0
-    # only keep the paths with the same side as the first stage
     if choice1 == 1  # Left side
         paths2 = [1, 2]  # LL, LR
         E2 = E[paths2]
@@ -87,7 +86,6 @@ function model1(φ::Vector{Float64}, rewards::Vector{Float64})
         E2 = E[paths2]
     end
     choice2 = 0
-
     
     while true
         t2 += 1
@@ -115,7 +113,7 @@ function model1(φ::Vector{Float64}, rewards::Vector{Float64})
             break
         end
     end
-    
+
     if timeout
         return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
     end
@@ -166,10 +164,10 @@ function model2(φ::Vector{Float64}, rewards::Vector{Float64})
     # --- first stage ---
     while true
         t += 1
-        # if t >= max_step
-        #     timeout = true
-        #     break
-        # end
+        if t >= max_step
+            timeout = true
+            break
+        end
 
         # Correlated noise for R_L and R_R
         noise_L = randn() * sigma
@@ -199,7 +197,6 @@ function model2(φ::Vector{Float64}, rewards::Vector{Float64})
     # --- second stage ---
     t2 = 0
     rt2 = 0.0
-    # only keep the paths with the same side as the first stage
     if choice1 == 1  # Left side
         paths2 = [1, 2]  # LL, LR
         E2 = E[paths2]
@@ -211,10 +208,10 @@ function model2(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        # if t2 >= max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 >= max_step
+            timeout = true
+            break
+        end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -288,10 +285,10 @@ function model3(φ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        # if t == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t == max_step
+            timeout = true
+            break
+        end
         # update evidence for each path
         E[1] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[3] + randn()*sigma)
         E[2] += (d1 * rewards[1]  + randn()*sigma) + (d1 * rewards[4] + randn()*sigma)
@@ -335,10 +332,10 @@ function model3(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -414,10 +411,10 @@ function model4(φ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        # if t == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t == max_step
+            timeout = true
+            break
+        end
     
         # Correlated noise for R_L and R_R
         noise_L = randn() * sigma
@@ -466,10 +463,10 @@ function model4(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
             E2[2] += (d2 * rewards[4] + randn()*sigma)
@@ -541,10 +538,10 @@ function model5(φ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        # if t == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t == max_step
+            timeout = true
+            break
+        end
         # update evidence for each path
         E[1] += (d * rewards[1]  + randn()*sigma) + (d * rewards[3] + randn()*sigma)
         E[2] += (d * rewards[1]  + randn()*sigma) + (d * rewards[4] + randn()*sigma)
@@ -582,10 +579,10 @@ function model5(φ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t2 += 1
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
         if choice1 == 1 
             E2[1] += (d * rewards[3] + randn()*sigma)
             E2[2] += (d * rewards[4] + randn()*sigma)
@@ -656,10 +653,10 @@ function model6(φ::Vector{Float64}, rewards::Vector{Float64})
     
     while true
         t += 1
-        # if t == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t == max_step
+            timeout = true
+            break
+        end
 
         # accumulate into first stage integrators
         E1[1] += (d1 * rewards[1]  + randn()*sigma)
@@ -685,10 +682,10 @@ function model6(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t2 += 1
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
 
         if choice1 == 1 
             E2[1] += (d2 * rewards[3] + randn()*sigma)
@@ -758,10 +755,10 @@ function model7(φ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        # if tL == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tL == max_step
+            timeout = true
+            break
+        end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -771,10 +768,10 @@ function model7(φ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        # if tR == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tR == max_step
+            timeout = true
+            break
+        end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
@@ -798,10 +795,10 @@ function model7(φ::Vector{Float64}, rewards::Vector{Float64})
     while true
         t1 += 1
 
-        # if t1 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t1 == max_step
+            timeout = true
+            break
+        end
 
         E_top_L += d1 * rewards[1] + randn()*sigma
         E_top_R += d1 * rewards[2] + randn()*sigma
@@ -833,10 +830,10 @@ function model7(φ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -889,10 +886,10 @@ function model8(φ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        # if tL == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tL == max_step
+            timeout = true
+            break
+        end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -902,10 +899,10 @@ function model8(φ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        # if tR == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tR == max_step
+            timeout = true
+            break
+        end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
@@ -929,10 +926,10 @@ function model8(φ::Vector{Float64}, rewards::Vector{Float64})
     while true
         t1 += 1
 
-        # if t1 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t1 == max_step
+            timeout = true
+            break
+        end
 
         E_top_L += d0 * rewards[1] + randn()*sigma
         E_top_R += d0 * rewards[2] + randn()*sigma
@@ -964,10 +961,10 @@ function model8(φ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -1023,10 +1020,10 @@ function model9(φ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        # if tL == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tL == max_step
+            timeout = true
+            break
+        end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -1036,10 +1033,10 @@ function model9(φ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        # if tR == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tR == max_step
+            timeout = true
+            break
+        end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
@@ -1065,10 +1062,10 @@ function model9(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t1 += 1
-        # if t1 >= max_step
-        #     timeout = true
-        #     break
-        # end
+        if t1 >= max_step
+            timeout = true
+            break
+        end
 
         # accumulate trunk + winning‐leaf in parallel
         E_top_L += (d1*rewards[1] + randn()*sigma) + (d1*rewards[winL] + randn()*sigma)
@@ -1100,10 +1097,10 @@ function model9(φ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -1157,10 +1154,10 @@ function model10(φ::Vector{Float64}, rewards::Vector{Float64})
     tL = 0
     while abs(E_LL - E_LR) < θ0
         tL += 1
-        # if tL == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tL == max_step
+            timeout = true
+            break
+        end
 
         E_LL += d0 * rewards[3] + randn()*sigma
         E_LR += d0 * rewards[4] + randn()*sigma
@@ -1170,10 +1167,10 @@ function model10(φ::Vector{Float64}, rewards::Vector{Float64})
     tR = 0
     while abs(E_RL - E_RR) < θ0
         tR += 1
-        # if tR == max_step
-        #     timeout = true
-        #     break
-        # end
+        if tR == max_step
+            timeout = true
+            break
+        end
 
         E_RL += d0 * rewards[5] + randn()*sigma
         E_RR += d0 * rewards[6] + randn()*sigma
@@ -1199,10 +1196,10 @@ function model10(φ::Vector{Float64}, rewards::Vector{Float64})
 
     while true
         t1 += 1
-        # if t1 >= max_step
-        #     timeout = true
-        #     break
-        # end
+        if t1 >= max_step
+            timeout = true
+            break
+        end
 
         # accumulate trunk + winning‐leaf in parallel
         E_top_L += (d0*rewards[1] + randn()*sigma) + (d0*rewards[winL] + randn()*sigma)
@@ -1234,10 +1231,10 @@ function model10(φ::Vector{Float64}, rewards::Vector{Float64})
     while abs(v1 - v2) < θ2
         t2 += 1
 
-        # if t2 == max_step
-        #     timeout = true
-        #     break
-        # end
+        if t2 == max_step
+            timeout = true
+            break
+        end
 
         v1 += d2 * rewards[idxs[1]] + randn()*sigma
         v2 += d2 * rewards[idxs[2]] + randn()*sigma
@@ -1675,6 +1672,120 @@ end
 
 
 
+# ======== Primary two-stage independent paths with discounting model ========
+"""
+Two-stage sequential integration model with independent paths.
+
+Parameters:
+- θ[1] (d1): Drift rate for first stage evidence accumulation
+- θ[2] (d2): Drift rate for second stage evidence accumulation  
+- θ[3] (θ1): Decision threshold for first stage (difference between top 2 paths)
+- θ[4] (θ2): Decision threshold for second stage (difference between remaining paths)
+- θ[5] (T1): Non-decision time for first stage (baseline response time)
+- θ[6] (T2): Non-decision time for second stage (baseline response time)
+- θ[7] (γ): Gamma parameter for discounting the future rewards
+
+Model behavior:
+- First stage: Accumulates evidence for all 4 paths (LL, LR, RL, RR) in parallel
+- Decision: Made when difference between top 2 paths exceeds θ1
+- Second stage: Only considers paths from chosen side (L or R)
+- Final choice: Determined by argmax of remaining evidence
+"""
+function model15(φ::Vector{Float64}, rewards::Vector{Float64})
+    # parameters
+    d1, d2      = φ[1], φ[2]
+    θ1          = φ[3]
+    Δ           = φ[4]
+    θ2          = θ1 + Δ
+    T1, T2      = φ[5], φ[6]
+    γ           = φ[7]
+
+    sigma       = 0.01
+
+    # initialize evidence for four paths
+    E = zeros(4) # [LL, LR, RL, RR]
+    timeout = false
+
+    # --- first stage ---
+    t = 0
+    rt1 = 0.0
+    max_step = 10000
+    choice1 = 0
+    
+    while true
+        t += 1
+        # if t == max_step
+        #     timeout = true
+        #     break
+        # end
+        # update evidence for each path
+        E[1] += (d1 * rewards[1]  + randn()*sigma) + (d1 * γ * rewards[3] + randn()*sigma)
+        E[2] += (d1 * rewards[1]  + randn()*sigma) + (d1 * γ * rewards[4] + randn()*sigma)
+        E[3] += (d1 * rewards[2]  + randn()*sigma) + (d1 * γ * rewards[5] + randn()*sigma)
+        E[4] += (d1 * rewards[2]  + randn()*sigma) + (d1 * γ * rewards[6] + randn()*sigma)
+
+        # check if the leading difference exceeds threshold θ1
+        v1, v2, v3, v4 = E
+        maxv = v1; maxidx = 1; secv = -Inf
+        if v2 > maxv; secv=maxv; maxv=v2; maxidx=2; else; secv=v2; end
+        if v3 > maxv; secv=maxv; maxv=v3; maxidx=3; elseif v3 > secv; secv=v3; end
+        if v4 > maxv; secv=maxv; maxv=v4; maxidx=4; elseif v4 > secv; secv=v4; end
+
+        if maxv - secv ≥ θ1
+            rt1 = t + T1
+            choice1 = maxidx <= 2 ? 1 : 2
+            break
+        end
+    end
+
+    # --- second stage ---
+    t2 = 0
+    rt2 = 0.0
+    # only keep the paths with the same side as the first stage
+    if choice1 == 1  # Left side
+        paths2 = [1, 2]  # LL, LR
+        E2 = E[paths2]
+    else  # Right side
+        paths2 = [3, 4]  # RL, RR
+        E2 = E[paths2]
+    end
+    choice2 = 0
+
+    
+    while true
+        t2 += 1
+        # if t2 == max_step
+        #     timeout = true
+        #     break
+        # end
+        if choice1 == 1 
+            E2[1] += (d2 * rewards[3] + randn()*sigma)
+            E2[2] += (d2 * rewards[4] + randn()*sigma)
+        else               
+            E2[1] += (d2 * rewards[5] + randn()*sigma)
+            E2[2] += (d2 * rewards[6] + randn()*sigma)
+        end
+
+        if abs(E2[1] - E2[2]) ≥ θ2
+            rt2    = t2 + T2
+            choice2_idx = E2[1] > E2[2] ? 1 : 2
+            # Map back to original choice2 encoding
+            if choice1 == 1
+                choice2 = choice2_idx  # 1->1 (LL), 2->2 (LR)
+            else
+                choice2 = choice2_idx + 2  # 1->3 (RL), 2->4 (RR)
+            end
+            break
+        end
+    end
+    
+    if timeout
+        return (choice1=0, rt1=0, choice2=0, rt2=0, timeout=true)
+    end
+
+    return (choice1=choice1, rt1=rt1, choice2=choice2, rt2=rt2, timeout=false)
+end
+
 
 
 # ======== Batch simulation function for PDA ========
@@ -1702,27 +1813,28 @@ function simulate_batch(model_func::Function, φ::Vector{Float64}, rewards::Vect
 end
 
 # # - example -
-# # theta = [8e-5, 6e-5, 0.5, 0.8, 500.0, 500.0]
-# theta = [7e-5, 8e-5, 6e-5, 0.4, 0.5, 0.8, 500.0, 500.0]
+# theta = [7.29e-5, 9.71e-5, 0.814, 0.721, 1251.6698786579100, 763, 0.01, 0.01]
 
-# # # Create a Model instance
-# model = Model(model10, theta)
+# # # # Create a Model instance
+# model = Model(model1, theta)
 
-# # Create a Trial instance
+# # # Create a Trial instance
 # trial = Trial(
-#     [4.0, -1.0, 2.0, -3.0, -3.0, 1.0],
-#     1,
-#     1,
-#     0.0,
-#     0.0
+#     "test",  # wid: participant ID
+#     [-3.0, 2.0, 4.0, -2.0, -4.0, 3.0],  # rewards
+#     2,  # choice1
+#     4,  # choice2
+#     0.0,  # rt1
+#     0.0,  # rt2
+#     [1.0, -5.0, -2.0, 5.0]  # path (using rewards as path for this example)
 # )
 
 # # simulate
-# result = model.simulate(model.θ, trial.rewards)
+# result = simulate(model, trial)
 
 # # result containts: choice1, rt1, choice2, rt2, timeout
-# println("choice1 = ", result.choice1)  # 1 或 2
+# println("choice1 = ", result.choice1)
 # println("rt1     = ", result.rt1)
-# println("choice2 = ", result.choice2)  # 1 到 4
+# println("choice2 = ", result.choice2)
 # println("rt2     = ", result.rt2)
 # println("timeout = ", result.timeout)

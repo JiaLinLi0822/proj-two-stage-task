@@ -113,6 +113,35 @@ function load_fitted_parameters(param_file::String, model_name::String)
     return param_dict
 end
 
+"""
+Load group-level (RSS) fitted parameters from CSV.
+Returns a single parameter vector for all subjects.
+"""
+function load_rss_parameters(param_file::String, model_name::String)
+    if !isfile(param_file)
+        error("Parameter file not found: $param_file")
+    end
+    param_df = CSV.read(param_file, DataFrame)
+    config = get_model_config(model_name)
+    param_names = config.param_names
+    if nrow(param_df) < 1
+        error("RSS parameter file has no rows: $param_file")
+    end
+    row = param_df[1, :]
+    params = Float64[]
+    for param_name in param_names
+        col_symbol = Symbol(param_name)
+        if hasproperty(row, col_symbol)
+            raw = row[col_symbol]
+            val = raw isa AbstractString ? parse(Float64, raw) : Float64(raw)
+            push!(params, val)
+        else
+            error("Parameter $param_name not found in RSS CSV for model $model_name. Available columns: $(names(param_df))")
+        end
+    end
+    println("Loaded RSS (group) parameters for $model_name: $(length(params)) parameters")
+    return params
+end
 
 # - example -
 # trials_by_subject = load_data_by_subject("julia/w11ae0c3.json")

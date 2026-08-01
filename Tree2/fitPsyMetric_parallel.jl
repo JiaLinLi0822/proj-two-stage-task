@@ -5,10 +5,10 @@ using Logging
 using LinearAlgebra
 
 
-const MODELS    = ["model11", "model12", "model13"]
+const MODELS    = ["model6", "model7", "model8", "model9", "model10"]
 const DATA_FILE = "Tree2/data/Tree2_v3.json"
 const OPTIMIZER = :de
-const NUM_FUNC_EVALS = 10000
+const NUM_FUNC_EVALS = 20000 
 
 if nworkers() < length(MODELS)
     addprocs(length(MODELS) - nworkers())
@@ -27,12 +27,16 @@ end
     return (model=mname, df=df)
 end
 
-ws = workers()[1:length(MODELS)]
+n_workers = min(length(workers()), length(MODELS))
+ws = workers()[1:n_workers]
 tasks = []
 
-for i in eachindex(MODELS)
+for i in 1:n_workers
     task = @spawnat ws[i] _run_model(MODELS[i]; data_file=DATA_FILE, optimizer=OPTIMIZER, NumFuncEvals=NUM_FUNC_EVALS)
     push!(tasks, task)
+end
+if n_workers < length(MODELS)
+    @warn "Only $n_workers workers available; running first $n_workers models (skipping $(MODELS[n_workers+1:end]))"
 end
 
 results = fetch.(tasks)

@@ -52,7 +52,13 @@ function chance_loglike(trials; rt_tol1=0, rt_tol2=0)
     mapreduce(+, trials) do t
         n_within_tol1 = 1 + min(max_rt1(t), t.rt1 + rt_tol1) - max(1, t.rt1 - rt_tol1)
         n_within_tol2 = 1 + min(max_rt2(t), t.rt2 + rt_tol2) - max(1, t.rt2 - rt_tol2)
-        log(0.5) + log(0.5) + log(n_within_tol1 / max_rt1(t)) + log(n_within_tol2 / max_rt2(t))
+        # log(0.5) + log(0.5) + log(n_within_tol1 / max_rt1(t)) + log(n_within_tol2 / max_rt2(t))
+        
+        # Clamp to ensure positive probabilities
+        prob1 = clamp(n_within_tol1 / max_rt1(t), 1e-10, 1.0)
+        prob2 = clamp(n_within_tol2 / max_rt2(t), 1e-10, 1.0)
+        
+        log(0.5) + log(0.5) + log(prob1) + log(prob2)
     end
 end
 
@@ -78,7 +84,10 @@ Args:
 - θ: Parameter vector
 - trial: Trial struct
 - model_func: Model function to use
-- J: Number of simulations for PDA
+- J: Minimum number of simulations (mapped to min_sims)
+- min_sims: Minimum number of simulations to perform (default: 1000)
+- min_matching: Minimum number of matching samples required (default: 100)
+- max_sims: Maximum number of simulations to prevent infinite loops (default: 1000000)
 - kwargs: Additional arguments for PDA functions
 
 Returns:
@@ -86,17 +95,25 @@ Returns:
 """
 function pda_loglike_single_trial(θ::Vector{Float64}, trial::Trial, model_func::Function;
                                    J::Int=1000,
+                                   min_sims::Int=1000,
+                                   min_matching::Int=100,
+                                   max_sims::Int=10000,
                                    kde_mode::Symbol=:gaussian,       # :product or :gaussian
                                    bw_rule::Symbol=:silverman,       # for :gaussian
                                    logRT::Bool=true,
                                    eps_floor::Float64=1e-16,
                                    lambda::Float64=1.0)
-    results = simulate_batch(model_func, θ, trial.rewards, J)
+
+    results = pda_sampler(trial, θ, model_func; 
+                         min_sims=max(min_sims, J),
+                         min_matching=min_matching,
+                         max_sims=max_sims)
     pairs = [(1,1), (1,2), (2,3), (2,4)]  # Tree2
     spdf = build_mixed2d_spdf(results, trial;
-                              pairs=pairs, kde_mode=kde_mode, bw_rule=bw_rule, logRT=logRT,
+                              pairs=pairs, bw_rule=bw_rule, logRT=logRT,
                               eps_floor=eps_floor)
-    return mixed2d_logpdf(spdf, trial, lambda)
+    ll, used_eps = mixed2d_logpdf(spdf, trial, lambda)
+    return ll, used_eps
 end
 
 """
@@ -108,20 +125,40 @@ Args:
 - θ: Parameter vector
 - trials: Vector of Trial structs
 - model_func: Model function to use
-- J: Number of simulations for PDA
+- J: Minimum number of simulations (mapped to min_sims)
+- min_sims: Minimum number of simulations to perform (default: 1000)
+- min_matching: Minimum number of matching samples required (default: 100)
+- max_sims: Maximum number of simulations to prevent infinite loops (default: 1000000)
 - kwargs: Additional arguments for PDA functions
 
 Returns:
 - Total log-likelihood across all trials
 """
 function pda_loglike(θ::Vector{Float64}, trials::Vector{Trial}, model_func::Function;
-                    J::Int=1000, kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman,
+                    J::Int=1000, 
+                    min_sims::Int=1000,
+                    min_matching::Int=100,
+                    max_sims::Int=10000,
+                    kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman,
                     logRT::Bool=true, eps_floor::Float64=1e-16, lambda::Float64=1.0)
     total_ll = 0.0
+    eps_floor_count = 0
     for trial in trials
-        total_ll += pda_loglike_single_trial(θ, trial, model_func; J=J,
-                                            kde_mode=kde_mode, bw_rule=bw_rule,logRT=logRT,eps_floor=eps_floor,lambda=lambda)
+        ll, used_eps = pda_loglike_single_trial(θ, trial, model_func; 
+                                            J=J,
+                                            min_sims=min_sims,
+                                            min_matching=min_matching,
+                                            max_sims=max_sims,
+                                            kde_mode=kde_mode, 
+                                            bw_rule=bw_rule,
+                                            logRT=logRT,
+                                            eps_floor=eps_floor,
+                                            lambda=lambda)
+        total_ll += ll
+        if used_eps
+            eps_floor_count += 1
+        end
     end
-    return total_ll
+    return total_ll, eps_floor_count, length(trials)
 end
 

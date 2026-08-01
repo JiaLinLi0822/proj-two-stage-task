@@ -26,13 +26,16 @@ end
     include("bads.jl")
     include("model_configs.jl")
     include("pda.jl")
+    include("fpt.jl")
 
     using JSON, DataFrames, CSV, Logging, Random, BlackBoxOptim
     disable_logging(Logging.Warn)
 end
 
 @everywhere function fit_subject(wid, trials, model_name::String, likelihood_method::String="ibs";
-                                kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE)
+                                kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, 
+                                min_sims::Int=1000, min_matching::Int=100, max_sims::Int=10000,
+                                eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE)
     
     # Get model configuration
     config = get_model_config(model_name)
@@ -56,7 +59,9 @@ end
     # Get initial parameters
     x0 = apply(box, config.initial_params)
     
-    println("Worker $(myid()): Starting BADS optimization for subject $wid using $model_name")
+    optimizer_label = optimizer == :DE ? "DE" : "BADS"
+    
+    println("Worker $(myid()): Starting $optimizer_label optimization for subject $wid using $model_name")
     
     # Tracker
     eval_count = Ref(0)
@@ -69,7 +74,6 @@ end
                 println("Worker $(myid()): Subject $wid - Evaluation $(eval_count[])")
             end
         
-            # Create model using the configured model function
             x = Float64.(x_unit)
             θ_dict = box(x)
             θ = [θ_dict[name] for name in param_names]
@@ -88,16 +92,36 @@ end
                 neg_ll = res.neg_logp
             elseif likelihood_method == "pda"
 
-                ll =  pda_loglike(θ, trials, 
+                ll, eps_floor_count, n_trials =  pda_loglike(θ, trials, 
                                   config.model_function;
-                                  J=J, 
+                                  J=J,
+                                  min_sims=min_sims,
+                                  min_matching=min_matching,
+                                  max_sims=max_sims,
                                   kde_mode=kde_mode, 
                                   bw_rule=bw_rule, 
                                   eps_floor=eps_floor,
                                   lambda=lambda)
                 neg_ll = -ll
+                
+                # Report eps_floor usage periodically
+                if eval_count[] % 100 == 0 || eval_count[] == 1
+                    eps_floor_pct = round(100.0 * eps_floor_count / n_trials, digits=1)
+                    println("Worker $(myid()): Subject $wid - Eval $(eval_count[]) | eps_floor used: $eps_floor_count/$n_trials ($eps_floor_pct%)")
+                end
+            elseif likelihood_method == "analytical"
+                analytical_eps_floor = 1e-16
+                total_ll = 0.0
+                for trial in trials
+                    ll = loglik_trial_stagewise(trial, θ; eps_floor=analytical_eps_floor)
+                    total_ll += ll
+                end
+                neg_ll = -total_ll
+                if !isfinite(neg_ll)
+                    return 1e6
+                end
             else
-                error("Unknown likelihood method: $likelihood_method. Use 'ibs' or 'pda'.")
+                error("Unknown likelihood method: $likelihood_method. Use 'ibs', 'pda', or 'analytical'.")
             end
     
             return Float64(neg_ll)
@@ -153,7 +177,6 @@ end
         
     catch e
         @error "Worker $(myid()): $optimizer_label failed for subject $wid" exception=(e, catch_backtrace())
-        # If BADS fails, return the initial point and a large function value
         return wid, x0, 1e6, param_names, optimizer_label
     end
 end
@@ -168,23 +191,25 @@ function run_model_fitting(model_name::String;
                           kde_mode::Symbol = :gaussian,
                           bw_rule::Symbol = :silverman,
                           J::Int = 1000,
+                          min_sims::Int = 1000,
+                          min_matching::Int = 100,
+                          max_sims::Int = 10000,
                           eps_floor::Float64 = 1e-16,
                           lambda::Float64 = 1.0,
                           optimizer::Symbol = :DE)
     
-    # Validate model name
     config = get_model_config(model_name)
     
-    # Set default output file name
     if output_file === nothing
         if likelihood_method == "pda"
             output_file = "Tree2/results/pda/$(model_name)_$(likelihood_method)_$(optimizer)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
+        elseif likelihood_method == "analytical"
+            output_file = "Tree2/results/analytical/$(model_name)_$(likelihood_method)_$(optimizer)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
         else
             output_file = "Tree2/results/ibs/$(model_name)_$(likelihood_method)_$(optimizer)_$(Dates.format(now(), "yyyymmdd_HHMMSS")).csv"
         end
     end
 
-    # Create output directory if it doesn't exist
     output_dir = dirname(output_file)
     if !isdir(output_dir)
         mkpath(output_dir)
@@ -203,12 +228,15 @@ function run_model_fitting(model_name::String;
         println("  Bandwidth rule: $bw_rule")
         println("  Eps floor: $eps_floor")
         println("  Simulations per trial: $J")
+    elseif likelihood_method == "analytical"
+        println("Analytical Configuration:")
+        println("  Using first passage time (FPT) density")
+        println("  Eps floor: $eps_floor")
     end
     println("Data file: $data_file")
     println("Output file: $output_file")
     println("Parameter bounds:")
     
-    # Display parameter configuration
     for (name, bounds) in config.hard_bounds.dims
         scale = length(bounds) > 2 && bounds[3] == :log ? " (log scale)" : ""
         println("  $name: [$(bounds[1]), $(bounds[2])]$scale")
@@ -220,7 +248,7 @@ function run_model_fitting(model_name::String;
     subject_trials = load_data_by_subject(data_file)
     println("Loaded data for $(length(subject_trials)) subjects")
     
-    # Count trials per participant for BIC calculation
+    # Count trials per participant
     println("Counting trials per participant for BIC calculation...")
     trial_counts = count_trials_per_participant(data_file)
     
@@ -228,7 +256,9 @@ function run_model_fitting(model_name::String;
     println("Starting parallel fitting...")
     pairs = collect(subject_trials)
     results = pmap(x -> fit_subject(x[1], x[2], model_name, likelihood_method; 
-                                   kde_mode=kde_mode, bw_rule=bw_rule, J=J, eps_floor=eps_floor, lambda=lambda, optimizer=optimizer), pairs)
+                                   kde_mode=kde_mode, bw_rule=bw_rule, J=J,
+                                   min_sims=min_sims, min_matching=min_matching, max_sims=max_sims,
+                                   eps_floor=eps_floor, lambda=lambda, optimizer=optimizer), pairs)
     
     # Collect and save results
     println("Collecting results...")
@@ -262,13 +292,16 @@ function run_model_fitting(model_name::String;
 end
 
 
-function run_pda_fitting(model_name::String; kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE, kwargs...)
-    return run_model_fitting(model_name; likelihood_method="pda", kde_mode=kde_mode, bw_rule=bw_rule, J=J, eps_floor=eps_floor, kwargs...)
+function run_pda_fitting(model_name::String; kde_mode::Symbol=:gaussian, bw_rule::Symbol=:silverman, J::Int=500, 
+                         min_sims::Int=1000, min_matching::Int=100, max_sims::Int=10000,
+                         eps_floor::Float64=1e-16, lambda::Float64=1.0, optimizer::Symbol=:DE, kwargs...)
+    return run_model_fitting(model_name; likelihood_method="pda", kde_mode=kde_mode, bw_rule=bw_rule, 
+                            J=J, min_sims=min_sims, min_matching=min_matching, max_sims=max_sims,
+                            eps_floor=eps_floor, lambda=lambda, optimizer=optimizer, kwargs...)
 end
 
 function run_ibs_fitting(model_name::String; optimizer::Symbol=:DE, kwargs...)
     return run_model_fitting(model_name; likelihood_method="ibs", kwargs...)
 end
-
 
 # run_pda_fitting("model6"; kde_mode=:gaussian, bw_rule=:silverman, J=1000, lambda=1.0, optimizer=:DE)

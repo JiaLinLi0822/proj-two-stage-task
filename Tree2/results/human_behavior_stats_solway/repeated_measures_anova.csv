@@ -1,0 +1,7 @@
+analysis,factor,dv,n_subjects,n_levels,n_imputed_cells,df_num,df_den,F,p,partial_eta_squared,missing_data_method
+stage1_accuracy_by_difficulty_level_mean_imputed,difficulty,correct1,45,10,45,9.0,396.0,58.08274246570112,5.882269276720494e-67,0.56897709703691,level_population_mean_imputation
+stage1_log_rt_by_difficulty_correct1_level_mean_imputed,difficulty,log_rt1,45,10,46,9.0,396.0,49.86565520755014,7.628437814618658e-60,0.531244948935691,level_population_mean_imputation
+stage2_accuracy_by_value_difference,diff2,correct2,45,8,0,7.0,308.0,14.954923568427205,8.364900037547392e-17,0.2536670843287495,complete_case
+stage2_log_rt_by_value_difference_correct2,diff2,log_rt2,45,8,0,7.0,308.0,23.611638806461297,1.2552840725938187e-25,0.34922447116020583,complete_case
+stage1_accuracy_by_tree_configuration,tree_configuration,correct1,45,3,0,2.0,88.0,90.77411423525618,4.066608566391934e-22,0.6735278117042907,complete_case
+stage1_log_rt_by_tree_configuration_correct1,tree_configuration,log_rt1,45,3,0,2.0,88.0,72.7622819350419,2.241839460844554e-19,0.6231659807361557,complete_case

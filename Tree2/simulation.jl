@@ -141,10 +141,10 @@ end
 
 
 # Simulation Configuration
-MODEL_NAME = "model2"
-PARAM_FILE = "Tree2/results/pda/model2_pda_BADS_20251003_171731.csv"
-TRIAL_FILE = "Tree2/data/Tree2_v3.json"
-OUTPUT_FILE = "Tree2/data/pda/$(MODEL_NAME)_pda.json"
+MODEL_NAME = "model1"
+PARAM_FILE = joinpath(@__DIR__, "results", "pda", "model1_pda_BADS_20260125_212328.csv")
+TRIAL_FILE = joinpath(@__DIR__, "data", "Tree2_v3.json")
+OUTPUT_FILE = joinpath(@__DIR__, "data", "pda", "$(MODEL_NAME).json")
 
 # Run simulation
 println("Starting simulation with model: $MODEL_NAME")

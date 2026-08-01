@@ -5,14 +5,17 @@ using Dates
 include("fitting.jl")
 
 # Model and data configuration
-models_to_fit = ["model10"]
+models_to_fit = ["model6"]
 data_file = "Tree2/data/Tree2_v3.json"
 
 # Likelihood method: "ibs" or "pda"
 likelihood_method = "pda"
 
 # PDA-specific hyperparameters (only used when likelihood_method = "pda")
-J = 1000                   # Number of simulations per trial for PDA
+J = 1000                   # Number of simulations per trial for PDA (mapped to min_sims)
+min_sims = 1000            # Minimum number of simulations to perform
+min_matching = 100         # Minimum number of matching samples required
+max_sims = 10000           # Maximum number of simulations to prevent infinite loops
 kde_model = :gaussian      # KDE model: :product (Epanechnikov) or :gaussian (multivariate Gaussian)
 bw_rule = :silverman       # Bandwidth rule for Gaussian KDE: :scott or :silverman
 eps_floor = 1e-16          # Floor value for numerical stability
@@ -28,6 +31,9 @@ for model_name in models_to_fit
                 data_file=data_file,
                 likelihood_method=likelihood_method,
                 J=J,
+                min_sims=min_sims,
+                min_matching=min_matching,
+                max_sims=max_sims,
                 kde_mode=kde_model,
                 bw_rule=bw_rule,
                 eps_floor=eps_floor,

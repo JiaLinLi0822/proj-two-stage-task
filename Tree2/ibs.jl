@@ -60,9 +60,9 @@ function ibs(hit_samplers::Vector{<:Function}; repeats=1, max_iter=1000, neg_log
                 n_call += 1
                 if est.k > max_iter || sample_hit!(est)
 
-                    if est.k > max_iter
-                        @warn "Termination after maximum number of iterations was reached (the estimate can be arbitrarily biased)."
-                    end
+                    # if est.k > max_iter
+                    #     @warn "Termination after maximum number of iterations was reached (the estimate can be arbitrarily biased)."
+                    # end
 
                     # Real hit: add to converged
                     converged_logp += mean(est)
@@ -86,7 +86,7 @@ function ibs(hit_samplers::Vector{<:Function}; repeats=1, max_iter=1000, neg_log
             # If the negative log-likelihood exceeds the threshold, treat the trials that are not hit as hits and exit
             if neg_logp > neg_logp_threshold
 
-                @warn "Termination after negative log-likelihood threshold was reached (the estimate can be arbitrarily biased)."
+                # @warn "Termination after negative log-likelihood threshold was reached (the estimate can be arbitrarily biased)."
 
                 # Add the trials that are not hit to converged
                 converged_logp += unconverged_logp
